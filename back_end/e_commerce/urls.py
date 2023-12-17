@@ -14,6 +14,7 @@ urlpatterns = [
     path('add-comment/<int:pk>', views.add_comment_to_post.as_view(), name='add-comment'),
     path('add-up-vote/<int:pk>', views.add_up_vote.as_view(), name='add-up-vote'),
     path('whishlist', views.wishlist_view.as_view(), name='whishlist'),
+    path('cart', views.Cart_view.as_view(), name='cart'),
 
 
 

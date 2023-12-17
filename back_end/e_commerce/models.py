@@ -83,5 +83,8 @@ class WishList(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_cart')
     items = models.ManyToManyField(Items)
-    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    items_count = models.IntegerField(default=0)
+
+class Transactions(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transactions')
+    item = models.ForeignKey(Items, on_delete=models.CASCADE, related_name='items_transactions')
+    quantity = models.IntegerField(default=0)

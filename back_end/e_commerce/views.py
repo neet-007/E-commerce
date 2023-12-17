@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie, csrf_
 from django.utils.decorators import method_decorator
 from .models import *
 from .serializers import *
+from .utils import *
 # Create your views here.
 @method_decorator(csrf_protect, name='dispatch')
 class signup_view(APIView):
@@ -281,7 +282,7 @@ class add_up_vote(generics.ListCreateAPIView):
         return Response({'error':'user is not authenricated'})
 
 
-class wishlist_view(generics.ListCreateAPIView):
+class wishlist_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     serializer_class = WishList_serializers
 
     def get_queryset(self):
@@ -317,6 +318,64 @@ class wishlist_view(generics.ListCreateAPIView):
             return Response({'error':'items not found'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'error':'user is not authenticated'})
+
+    def put(self, request, *args, **kwargs):
+        user = self.request.user
+        return manipulate(user, self.request.data, WishList, WishList_serializers, 'put')
+
+    def delete(self, request, *args, **kwargs):
+        user = self.request.user
+        return manipulate(user, self.request.data, WishList, WishList_serializers, 'delete')
+
+
+class Cart_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
+    serializer_class = Cart_serializers
+
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+
+        if user and user is not AnonymousUser:
+            if not Cart.objects.filter(user=user).exists():
+
+                if Cart_serializers(data=self.request.data).is_valid():
+                    items_list = set(map(int,(self.request.data).get('items', [])))
+
+                    existing_objects = Items.objects.filter(id__in=items_list)
+
+                    existing_ids = set(item.id for item in existing_objects)
+
+                    missing_items = existing_ids - items_list
+
+                    if missing_items:
+                        return Response ({'error':'Items not found {}'.format(missing_items)}, status=status.HTTP_400_BAD_REQUEST)
+                    cart = Cart.objects.create(
+                        user=user,
+                    )
+
+                    cart.items.add(*existing_objects)
+
+                    cart.save()
+
+                    return Response(Cart_serializers(cart).data, status=status.HTTP_201_CREATED)
+
+                return Response({'error':'data is invalid'}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'error':'user already have a cart'})
+
+        return Response({'error':'user is not authenticated'})
+
+    def put(self, request, *args, **kwargs):
+        user = self.request.user
+        return manipulate(user, self.request.data, Cart, Cart_serializers, 'put')
+
+    def delete(self, request, *args, **kwargs):
+        user = self.request.user
+        return manipulate(user, self.request.data, Cart, Cart_serializers, 'delete')
+
+
 
 
 class test(generics.ListAPIView):
