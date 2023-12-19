@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import AnonymousUser
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
+from django.db import transaction
 from .models import *
 from .serializers import *
 from .utils import *
@@ -297,25 +298,7 @@ class wishlist_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics
                 user=user
             )
 
-            existing_items = set(map(int, data.get('items', [])))
-            if existing_items:
-                existing_objects = Items.objects.filter(id__in=existing_items)
-
-                existing_ids = set(item.id for item in existing_objects)
-
-                missing_items = existing_items - existing_ids
-
-                if missing_items:
-                    return Response({'error': 'Items not found: {}'.format(missing_items)}, status=status.HTTP_400_BAD_REQUEST)
-
-                # Now all items exist in the database, proceed to add them to the category
-                wishlist.items.add(*existing_objects)
-
-                wishlist.save()
-
-                return Response(WishList_serializers(wishlist).data, status=status.HTTP_201_CREATED)
-
-            return Response({'error':'items not found'}, status=status.HTTP_400_BAD_REQUEST)
+            return get_item(data, wishlist, WishList_serializers, 'post')
 
         return Response({'error':'user is not authenticated'})
 
@@ -336,46 +319,59 @@ class Cart_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.Des
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
-
-        if user and user is not AnonymousUser:
-            if not Cart.objects.filter(user=user).exists():
-
-                if Cart_serializers(data=self.request.data).is_valid():
-                    items_list = set(map(int,(self.request.data).get('items', [])))
-
-                    existing_objects = Items.objects.filter(id__in=items_list)
-
-                    existing_ids = set(item.id for item in existing_objects)
-
-                    missing_items = existing_ids - items_list
-
-                    if missing_items:
-                        return Response ({'error':'Items not found {}'.format(missing_items)}, status=status.HTTP_400_BAD_REQUEST)
-                    cart = Cart.objects.create(
-                        user=user,
-                    )
-
-                    cart.items.add(*existing_objects)
-
-                    cart.save()
-
-                    return Response(Cart_serializers(cart).data, status=status.HTTP_201_CREATED)
-
-                return Response({'error':'data is invalid'}, status=status.HTTP_400_BAD_REQUEST)
-
-            return Response({'error':'user already have a cart'})
-
-        return Response({'error':'user is not authenticated'})
+        return manipulate2(user, self.request.data, Cart, CartItem, Cart_serializers, 'post')
 
     def put(self, request, *args, **kwargs):
         user = self.request.user
-        return manipulate(user, self.request.data, Cart, Cart_serializers, 'put')
+        return manipulate2(user, self.request.data, Cart, CartItem, Cart_serializers, 'put')
 
     def delete(self, request, *args, **kwargs):
         user = self.request.user
-        return manipulate(user, self.request.data, Cart, Cart_serializers, 'delete')
+        return manipulate2(user, self.request.data, Cart, CartItem, Cart_serializers, 'delete')
 
 
+class Order_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
+    serializer_class = Order_serializers
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        return manipulate2(user, self.request.data, Order, OrderItem, Order_serializers, 'post')
+
+    def put(self, request, *args, **kwargs):
+        user = self.request.user
+        return manipulate2(user, self.request.data, Order, OrderItem, Order_serializers, 'put')
+
+    def delete(self, request, *args, **kwargs):
+        user = self.request.user
+        return manipulate2(user, self.request.data, Order, OrderItem, Order_serializers, 'delete')
+
+
+class Cart_to_order_view(generics.ListCreateAPIView):
+    serializer_class = Order_serializers
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        if user and user is not AnonymousUser and not Order.objects.filter(user=user).exists():
+
+            cart = Cart.objects.get(user=user)
+            if cart:
+
+                order = Order.objects.create(user=user, is_active=True)
+                list_to_add = [OrderItem(order=order, item=cart_item.item, quantity=cart_item.quantity) for cart_item in cart.cart_cartitem.all()]
+                with transaction.atomic():
+                    OrderItem.objects.bulk_create(list_to_add)
+
+                return Response(Order_serializers(order).data, status=status.HTTP_201_CREATED)
+
+            return Response({'error':'cart not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error':'user is not authintaced'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class test(generics.ListAPIView):
@@ -383,5 +379,5 @@ class test(generics.ListAPIView):
     serializer_class = User_serializer
 
     def post(self, request):
-        print(type(self.request.data['items']))
+        print(User.__name__)
         return

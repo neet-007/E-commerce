@@ -1,7 +1,7 @@
 from django.db.models import Sum
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from .models import User, Items, Categories, Ratings, Comments, Up_votes, WishList, Cart
+from .models import *
 
 class User_serializer(ModelSerializer):
     class Meta:
@@ -60,18 +60,77 @@ class WishList_serializers(ModelSerializer):
     def items_count(self, product:WishList):
         return product.items.all().count()
 
+class Cart_item_serializers(ModelSerializer):
+    item = Items_serializers(read_only=True, required=False)
+    price = serializers.SerializerMethodField(method_name='calculate_price')
+    class Meta:
+        model = CartItem
+        fields = '__all__'
+
+    def calculate_price(self, item:CartItem):
+        return item.item.price * item.quantity
+
+class items_id_quantity(serializers.Serializer):
+    items = serializers.ListField()
+    quantity = serializers.ListField()
+    def validate(self, attrs):
+        items = attrs['items']
+        quantity = attrs['quantity']
+
+        if items and quantity and len(items) == len(quantity):
+            for item in items:
+                if not int(item):
+                    raise serializers.ValidationError('items must be integer ids')
+
+                if Items.objects.filter(id__in=items).exists:
+                     return attrs
+
+        raise serializers.ValidationError('invalid data')
+
 class Cart_serializers(ModelSerializer):
     user = User_serializer(read_only=True)
-    items = Items_serializers(read_only=True, many=True)
+    cart_items = Cart_item_serializers(source='cart_cartitem', many=True)
     price = serializers.SerializerMethodField(method_name='calculate_price')
-    count = serializers.SerializerMethodField(method_name='items_count')
+    count = serializers.SerializerMethodField(method_name='cart_items_count')
     class Meta:
         model = Cart
         fields = '__all__'
 
     def calculate_price(self, product:Cart):
-        total_price = product.items.aggregate(total_price=Sum('price'))['total_price']
-        return total_price or 0
+        total = 0
+        for cart_item in product.cart_cartitem.all():
+            total += cart_item.quantity * cart_item.item.price
 
-    def items_count(self, product:Cart):
-        return product.items.all().count()
+        return total
+
+    def cart_items_count(self, product:Cart):
+        return product.cart_cartitem.all().count()
+
+class Order_item_serializers(ModelSerializer):
+    item = Items_serializers()
+    price = serializers.SerializerMethodField(method_name='calculate_price')
+    class Meta:
+        model = OrderItem
+        fields = '__all__'
+
+    def calculate_price(self, product:OrderItem):
+        return product.quantity * product.item.price
+
+class Order_serializers(ModelSerializer):
+    user = User_serializer(read_only=True)
+    order_items = Order_item_serializers(source='order_orderitem',read_only=True, many=True)
+    price = serializers.SerializerMethodField(method_name='calculate_price')
+    count = serializers.SerializerMethodField(method_name='order_item_count')
+    class Meta:
+        model = Order
+        fields = '__all__'
+
+    def calculate_price(self, product:Order):
+        total = 0
+        for order_item in product.order_orderitem.all():
+            total += order_item.quantity * order_item.item.price
+
+        return total
+
+    def order_item_count(self, product:Order):
+        return product.order_orderitem.all().count()

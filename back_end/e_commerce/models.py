@@ -82,9 +82,20 @@ class WishList(models.Model):
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_cart')
-    items = models.ManyToManyField(Items)
 
-class Transactions(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_transactions')
-    item = models.ForeignKey(Items, on_delete=models.CASCADE, related_name='items_transactions')
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cart_cartitem')
+    item = models.ForeignKey(Items, on_delete=models.CASCADE, related_name='item_cartitem')
     quantity = models.IntegerField(default=0)
+
+class Order(models.Model):
+    user= models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_order')
+    created_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=False)
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_orderitem')
+    item = models.ForeignKey(Items, on_delete=models.CASCADE, related_name='items_orderitem')
+    quantity = models.IntegerField(default=0)
+
+

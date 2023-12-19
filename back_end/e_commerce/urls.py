@@ -15,6 +15,8 @@ urlpatterns = [
     path('add-up-vote/<int:pk>', views.add_up_vote.as_view(), name='add-up-vote'),
     path('whishlist', views.wishlist_view.as_view(), name='whishlist'),
     path('cart', views.Cart_view.as_view(), name='cart'),
+    path('order', views.Order_view.as_view(), name='order'),
+    path('cart-to-order', views.Cart_to_order_view.as_view(), name='cart-to-order'),
 
 
 
