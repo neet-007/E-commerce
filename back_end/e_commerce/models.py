@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import MaxValueValidator
+from uuid import uuid4
 # Create your models here.
 
 class UserManager(BaseUserManager):
@@ -55,10 +56,16 @@ class Items(models.Model):
     created_at = models.DateTimeField(auto_now=True)
     in_stock = models.BooleanField(default=True)
 
+    def __str__(self) -> str:
+        return f'user:{self.user.username} item name:{self.name} price:{self.price}'
+
 class Categories(models.Model):
     name = models.CharField(max_length=255)
     user = models.ManyToManyField(User)
     item = models.ManyToManyField(Items)
+
+    def __str__(self) -> str:
+        return f'category:{self.name}'
 
 class Ratings(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_ratings')
@@ -98,4 +105,6 @@ class OrderItem(models.Model):
     item = models.ForeignKey(Items, on_delete=models.CASCADE, related_name='items_orderitem')
     quantity = models.IntegerField(default=0)
 
-
+class Verification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_verificatoin')
+    token = models.UUIDField(primary_key=True, default=uuid4, editable=False)

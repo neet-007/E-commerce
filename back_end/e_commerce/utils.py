@@ -4,6 +4,8 @@ from .models import Items
 from .serializers import items_id_quantity
 from django.db import transaction
 from django.contrib.auth.models import AnonymousUser
+from django.core.mail import EmailMessage
+import json
 def manipulate(user, data, object, serializer, command, *args, **kwargs):
     if user and user is not AnonymousUser:
 
@@ -92,3 +94,27 @@ def manipulate2(user, data, object, object_item, serializer, command):
         return Response({'error':'user doesnt have order'}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'error':'user is not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
+
+def send_email_function(email, *args, **kwargs):
+    if kwargs.get('token_id') and kwargs.get('user_id'):
+        token_id = kwargs['token_id']
+        user_id = kwargs['user_id']
+        email_obj = EmailMessage(subject='verify email', body=f'to verify your email please go to http://localhost:5173/verfiy/{token_id}/{user_id}', to=(email, ))
+        email_obj.send()
+        return
+
+    elif kwargs.get('order') and kwargs.get('user'):
+        user = kwargs['user']
+        order = kwargs['order']
+        email_obj = EmailMessage(subject='your order is submited', body=f'{user.username} your order of id {order.id} of items{order.order_orderitem.all().values()} was submitd', to=(email, ))
+        email_obj.send()
+        return
+
+    elif kwargs.get('order_d') and kwargs.get('user'):
+        user = kwargs['user']
+        order = kwargs['order_d']
+        email_obj = EmailMessage(subject='order delivered', body=f'{user.username} your order of id {order} and items {json.dumps(order)}was deliverd successfuly', to=(email, ))
+        email_obj.send()
+        return
+
+    raise KeyError('requset not found')
