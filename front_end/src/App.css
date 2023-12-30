@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;800&family=Roboto:wght@300;400;500;700;900&display=swap');
+
+:root{
+  --font-primary: 'Roboto', sans-serif;
+  --font-secondory: 'Poppins', sans-serif;
+}
+*, *::before, *::after{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+#root{
+  overflow-x: hidden;
+}
+body{
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+  font-family: var(--font-primary);
+}
+.f-regular{
+  font-size: normal;
+}
+.f-large{
+  font-size: 1.7rem;
+}
+.f-larger{
+  font-size: 1rem;
+}
+.f-small{
+  font-size: small;
+}
+.fw-regular{
+  font-weight: normal;
+}
+.fw-bold{
+  font-weight: bold;
+}
+.fw-light{
+  font-weight: lighter;
+}
+.text-muted{
+  color: gray;
+}
+.x-snap{
+  scroll-snap-type: x mandatory;
+}
+.x-snap > * {
+  scroll-snap-align: start;
+}
+.flex-group{
+  display: flex;
+}
+.gap-1{
+  gap: 1rem;
+}
+.flex-group-between{
+  display: flex;
+  justify-content: space-between;
+}
+.b-bottom{
+  border-bottom: 1px solid black;
+}

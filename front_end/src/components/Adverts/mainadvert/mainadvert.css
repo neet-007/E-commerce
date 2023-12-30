@@ -1,0 +1,22 @@
+.mainadvert__main-article{
+    min-width: 100%;
+    display: flex;
+    background-color: gray;
+    min-width: 100%;
+    min-height: 10rem;
+    justify-content: center;
+}
+.mainadvert__text-span{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+}
+
+@media only screen and (max-width: 1020px){
+    .mainadvert__main-article{
+        min-height: 30rem;
+        justify-content: start;
+        padding: 0rem 4rem;
+    }
+}

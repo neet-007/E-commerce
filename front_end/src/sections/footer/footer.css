@@ -1,0 +1,42 @@
+.footer{
+    background-color: black;
+    color: white;
+    display: grid;
+    grid-template-areas:
+    'footer__email'
+    'footer__group-1'
+    'footer__group-2'
+    'footer__group-3'
+    'footer__social-media'
+    'footer__location'
+    'footer__policy';
+}
+.footer__email{
+    grid-area: footer__email;
+}
+.footer__group-1{
+    grid-area: footer__group-1;
+}
+.footer__group-2{
+    grid-area: footer__group-2;
+}
+.footer__group-3{
+    grid-area: footer__group-3;
+}
+.footer__social-media{
+    grid-area: footer__social-media;
+}
+.footer__location{
+    grid-area: footer__location;
+}
+.footer__policy{
+    grid-area: footer__policy;
+}
+
+@media only screen {
+    .footer{
+    grid-template-areas:
+    'footer__email footer__group-1 footer__group-2 footer__group-3 footer__social-media'
+    'footer__location footer__policy . . .';
+    }
+}

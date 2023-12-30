@@ -1,0 +1,53 @@
+.cart__main-section{
+    min-width: 100;
+    display: grid;
+    padding: 1rem;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+    'cart__offer'
+    'cart__bag'
+    'cart__bag-border'
+    'cart__summery';
+    gap: 1rem;
+}
+.cart__offer{
+    grid-area: cart__offer;
+    place-self: center;
+}
+.cart__bag{
+    grid-area: cart__bag;
+    padding: 1rem;
+    place-content: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+.cart__bag-total-price{
+    display: flex;
+    gap: 0.5rem;
+}
+.cart__cartitems-container{
+    width: 100%;
+}
+.cart__bag-border{
+    height: 1px;
+    width: 100%;
+    background-color: black;
+    margin-top: -1rem;
+}
+.cart__summery{
+    grid-area: cart__summery;
+}
+
+@media only screen and (min-width: 1020px){
+    .cart__main-section{
+        grid-template-columns: 60% 40%;
+        grid-template-areas:
+        'cart__offer cart__offer'
+        'cart__bag cart__summery';
+    }
+    .cart__bag{
+        align-items: start;
+    }
+}

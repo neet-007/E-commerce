@@ -8,20 +8,32 @@ class User_serializer(ModelSerializer):
         model = User
         fields = ['email', 'username', 'bio', 'items_count', 'cash', 'is_verified']
 
+
+class Categories_serializers(ModelSerializer):
+    class Meta:
+        model = Categories
+        fields = '__all__'
+
+
 class Items_serializers(ModelSerializer):
     user = User_serializer(read_only=True)
     in_stock = serializers.BooleanField(read_only=True)
+    category = Categories_serializers(read_only=True)
     class Meta:
         model = Items
         fields = '__all__'
 
+class CategoriesWithItemsSerializer(serializers.ModelSerializer):
+    items = serializers.SerializerMethodField(method_name='get_items')
 
-class Categories_serializers(ModelSerializer):
-    user = User_serializer(read_only=True, many=True)
-    item = Items_serializers(read_only=True, many=True)
     class Meta:
         model = Categories
-        fields = '__all__'
+        fields = ['id', 'name', 'items']
+
+    def get_items(self, obj):
+        items = obj.items_set.all()
+        response = Items_serializers(items, many=True).data
+        return response
 
 class Ratings_serializers(ModelSerializer):
     user = User_serializer(read_only=True)

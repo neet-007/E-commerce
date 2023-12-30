@@ -1,0 +1,40 @@
+.navbar__nav{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+}
+.navbar__ul{
+    list-style: none;
+    display: none;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.navbar__li{
+
+}
+.navbar__mobile-list{
+}
+.navbar__ul--mobile{
+    list-style: none;
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    padding: 1rem;
+    right: -100%;
+    display: flex;
+    border-radius: 0 0 0 2rem;
+    flex-direction: column;
+    background-color: white;
+    gap: 1rem;
+    transition: right 200ms ease-in-out;
+}
+.navbar__overlay{
+    display: none;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}

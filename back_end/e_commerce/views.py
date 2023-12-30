@@ -136,7 +136,8 @@ class items_view(generics.ListCreateAPIView):
         user = self.request.user
         if user and user is not AnonymousUser:
             data = self.request.data
-            if Items_serializers(data=data).is_valid():
+            serialized_data = Items_serializers(data=data)
+            if serialized_data.is_valid():
 
                 item = Items.objects.create(
                     user=user,
@@ -145,6 +146,10 @@ class items_view(generics.ListCreateAPIView):
                     price=data['price'],
                     in_stock=True
                 )
+
+                if serialized_data.validated_data.get('category'):
+                    categories = Categories.objects.filter(id__in=serialized_data.validated_data.get('category'))
+                    item.category.add(*categories)
 
                 item.save()
                 user.items_count += 1
@@ -208,12 +213,7 @@ class single_item_view(generics.RetrieveUpdateDestroyAPIView):
 
 class create_categories_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     serializer_class = Categories_serializers
-
-    def get_queryset(self):
-        if self.kwargs['pk'] == 'me':
-            return Categories.objects.filter(user=self.request.user)
-
-        return Categories.objects.all()
+    queryset = Categories.objects.all()
 
     def post(self, request):
         user = self.request.user
@@ -226,24 +226,6 @@ class create_categories_view(generics.ListCreateAPIView, generics.UpdateAPIView,
                     name=data['name']
                 )
 
-                category.user.add(user)
-
-
-                existing_items = set(map(int, data.get('items', [])))
-                if existing_items:
-                    existing_objects = Items.objects.filter(id__in=existing_items)
-                    existing_ids = set(item.id for item in existing_objects)
-
-                    missing_items = existing_items - existing_ids
-
-                    if missing_items:
-                        return Response({'error': 'Items not found: {}'.format(missing_items)}, status=status.HTTP_400_BAD_REQUEST)
-
-                    # Now all items exist in the database, proceed to add them to the category
-                    category.item.add(*existing_objects)
-
-                category.save()
-
                 return Response(Categories_serializers(category).data, status=status.HTTP_201_CREATED)
 
             return Response({'error':'invalid data'}, status=status.HTTP_400_BAD_REQUEST)
@@ -255,13 +237,13 @@ class single_category(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = Categories_serializers
 
     def get_queryset(self):
-        return Categories.objects.filter(id=self.kwargs['pk'], user=self.request.user)
+        return Categories.objects.filter(id=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
         user = self.request.user
         if user and user is not AnonymousUser:
 
-            category = get_object_or_404(Categories, id=self.kwargs['pk'], user=user)
+            category = get_object_or_404(Categories, id=self.kwargs['pk'])
             serialized_data = Categories_serializers(data=self.request.data)
             if serialized_data.is_valid():
 
@@ -274,22 +256,23 @@ class single_category(generics.RetrieveUpdateDestroyAPIView):
         return Response({'error':'user is not authentaiced'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-class add_item_to_categories_view(generics.RetrieveAPIView, generics.CreateAPIView):
-    serializer_class = Categories_serializers
+class add_item_to_categories_view(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CategoriesWithItemsSerializer
 
     def get_queryset(self):
         return Categories.objects.filter(id=self.kwargs['pk'])
 
-    def post(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         user = self.request.user
         if user and user is not AnonymousUser:
             category = Categories.objects.get(id=self.kwargs['pk'])
 
             if category:
-                item = Items.objects.get(id=(self.request.data.get('item')))
-                if item:
-                    category.item.add(item)
-                    category.save()
+                items = Items.objects.filter(id__in=(self.request.data.get('items')))
+                if items:
+                    for item in items:
+                        item.category.add(category)
+                        item.save()
 
                     return Response(Categories_serializers(category).data, status=status.HTTP_201_CREATED)
 
@@ -298,6 +281,23 @@ class add_item_to_categories_view(generics.RetrieveAPIView, generics.CreateAPIVi
             return Response({'error':'category not found'})
 
         return Response({'error':'user is not authenticated'})
+
+    def delete(self, request, *args, **kwargs):
+        user = self.request.user
+        if user and user is not AnonymousUser:
+
+            category = get_object_or_404(Categories, id=self.kwargs['pk'])
+            items = Items.objects.filter(id__in=(self.request.data).get('items'))
+            if items:
+                for item in items:
+                    item.category.remove(category)
+                    item.save()
+
+                return Response({'success':'items removed from category'}, status=status.HTTP_200_OK)
+
+            return Response({'error':'items not fonud'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error':'user is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class add_rating_view(generics.ListCreateAPIView):

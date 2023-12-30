@@ -48,6 +48,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self) -> str:
         return f'user:{self.username} cash:{self.cash}'
 
+class Categories(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return f'category:{self.name}'
+
 class Items(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_items')
     name = models.CharField(max_length=255)
@@ -55,17 +61,9 @@ class Items(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now=True)
     in_stock = models.BooleanField(default=True)
-
+    category = models.ManyToManyField(Categories)
     def __str__(self) -> str:
         return f'user:{self.user.username} item name:{self.name} price:{self.price}'
-
-class Categories(models.Model):
-    name = models.CharField(max_length=255)
-    user = models.ManyToManyField(User)
-    item = models.ManyToManyField(Items)
-
-    def __str__(self) -> str:
-        return f'category:{self.name}'
 
 class Ratings(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_ratings')
