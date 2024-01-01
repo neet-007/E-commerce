@@ -38,3 +38,12 @@
     height: 100%;
     width: 100%;
 }
+
+@media only screen and (min-width:1020px){
+    .navbar__ul{
+        display: flex;
+    }
+    .navbar__mobile-list{
+        display: none;
+    }
+}

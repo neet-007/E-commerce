@@ -9,8 +9,8 @@
   margin: 0;
   box-sizing: border-box;
 }
-#root{
-  overflow-x: hidden;
+h1,h2,h3,h4,h5,h6{
+  font-weight: normal;
 }
 body{
   padding: 0;
@@ -18,8 +18,17 @@ body{
   overflow-x: hidden;
   font-family: var(--font-primary);
 }
+.app__main-section{
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 7rem;
+}
 .f-regular{
   font-size: normal;
+}
+.f-xlarge{
+  font-size: 3rem;
 }
 .f-large{
   font-size: 1.7rem;
@@ -54,10 +63,29 @@ body{
 .gap-1{
   gap: 1rem;
 }
+.flex-group-column{
+  display: flex;
+  flex-direction: column;
+}
 .flex-group-between{
   display: flex;
   justify-content: space-between;
 }
+.align-items-center{
+  align-items: center;
+}
 .b-bottom{
   border-bottom: 1px solid black;
+}
+.b-bottom-white{
+  border-bottom: 1px solid white;
+}
+.cap{
+  text-transform: capitalize;
+}
+.upper{
+  text-transform: uppercase;
+}
+.cursor-pointer{
+  cursor: pointer;
 }

@@ -32,7 +32,7 @@
     display: none;  /* Safari and Chrome */
 }
 
-@media only screen and (max-width: 850px){
+@media only screen and (max-width: 1020px){
     .carousel__control{
         display: none;
     }

@@ -1,0 +1,21 @@
+.dropdownmenu__ul{
+    display: flex;
+    margin-top: 0.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 200ms ease-in-out
+}
+.h{
+    max-height: 500px;
+}
+
+@media only screen and (min-width: 1020px){
+    .dropdownmenu__plus{
+        display: none;
+    }
+    .dropdownmenu__ul{
+        max-height: fit-content;
+    }
+}

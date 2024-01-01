@@ -1,0 +1,16 @@
+.mainherotext__main-article{
+    align-items: left;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+@media only screen and (min-width: 1020px){
+    .mainherotext__main-article{
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .mainherotext__top{
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
