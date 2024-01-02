@@ -18,6 +18,9 @@ body{
   overflow-x: hidden;
   font-family: var(--font-primary);
 }
+img{
+  max-width: 100%;
+}
 .app__main-section{
   padding: 2rem;
   display: flex;
@@ -74,6 +77,9 @@ body{
 .align-items-center{
   align-items: center;
 }
+.justify-content-center{
+  justify-content: center;
+}
 .b-bottom{
   border-bottom: 1px solid black;
 }
@@ -88,4 +94,13 @@ body{
 }
 .cursor-pointer{
   cursor: pointer;
+}
+.m-t-1{
+  margin-top: 0.5rem;
+}
+.m-t-2{
+  margin-top: 1rem;
+}
+.p-1{
+  padding: 1rem;
 }

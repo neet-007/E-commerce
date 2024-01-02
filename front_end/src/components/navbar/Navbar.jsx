@@ -11,6 +11,10 @@ const toggleSideNav = (e) => {
     const overlay = document.getElementsByClassName('navbar__overlay')[0]
     sideNav.style.right === '0px' ? (sideNav.style.right = '-100%' , overlay.style.display = 'none') : (sideNav.style.right = '0', overlay.style.display = 'block')
 }
+const toggleSearchComponent = () => {
+    const serachComponent = document.getElementsByClassName('searchcomponent__article')[0]
+    !serachComponent.classList.contains('searchcomponent__article_show') ? serachComponent.classList.add('searchcomponent__article_show') : serachComponent.classList.remove('searchcomponent__article_show')
+}
 const NavItem = ({name}) => {
     return (
         <li className='navbar__li cursor-pointer'>
@@ -29,7 +33,7 @@ const Navbar = () => {
         </ul>
         <span className='flex-group align-items-center gap-1'>
             <CartIcon/>
-            <SearchBar/>
+            <SearchBar onClick={() => toggleSearchComponent()}/>
             <div className='navbar__mobile-list'>
                 <List size={30} onClick={(e) => {toggleSideNav(e)}}/>
                 <div className='navbar__overlay'></div>

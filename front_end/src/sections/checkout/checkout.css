@@ -1,0 +1,22 @@
+.checkout__main-article{
+    display: grid;
+    grid-template-areas:
+    'checkout__summery'
+    'checkout__details';
+    gap: 3rem;
+    padding: 0rem 8rem;
+}
+.checkout__details{
+    grid-area: checkout__details;
+}
+.checkout__summery{
+    grid-area: checkout__summery;
+}
+
+@media only screen and (min-width:1020px){
+    .checkout__main-article{
+        grid-template-columns: 55% 45%;
+        grid-template-areas:
+        'checkout__details checkout__summery';
+    }
+}

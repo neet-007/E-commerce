@@ -1,0 +1,22 @@
+@keyframes rotate-infinite{
+    100%{
+        transform: rotate(180deg);
+    }
+}
+.loader{
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.loader__loader{
+    animation: rotate-infinite infinite ease-in-out;
+    transform: rotate(0deg);
+    animation-play-state: running;
+}

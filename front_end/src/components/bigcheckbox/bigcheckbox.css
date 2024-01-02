@@ -1,0 +1,17 @@
+.bigcheckbox__layout{
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(3, 1fr);
+}
+.bigcheckbox__layout > span{
+    background-color: white;
+    border: 0.5px solid rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 1rem;
+    cursor: pointer;
+}
+.bigcheckbox__layout > span:hover{
+    border: 1.5px solid rgba(0, 0, 0, 1);
+}

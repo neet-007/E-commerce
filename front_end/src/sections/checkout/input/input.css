@@ -1,0 +1,10 @@
+.input__input{
+    padding: 1.3rem;
+    border-radius: 0.7rem;
+    border: 1px solid ;
+}
+.input__input::placeholder{
+    text-transform: capitalize;
+    color: gray;
+    font-size: 1rem;
+}

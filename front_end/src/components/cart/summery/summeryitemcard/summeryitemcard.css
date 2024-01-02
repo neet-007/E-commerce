@@ -1,0 +1,11 @@
+.summeryitemcard__main-article{
+    display: flex;
+}
+.summeryitemcard__main-article > img {
+    width: 15rem;
+}
+.summeryitemcard__details{
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
