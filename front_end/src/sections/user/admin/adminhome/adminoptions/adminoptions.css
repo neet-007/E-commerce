@@ -1,0 +1,23 @@
+.adminoptions__maindiv {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.adminoptions__maindiv li > button{
+    outline: none;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+.adminoptions__ul{
+    list-style: none;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.adminoptions__ul > li {
+    border-bottom: 1px solid;
+    width: fit-content;
+}

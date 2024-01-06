@@ -4,6 +4,7 @@ import { NAVBAR_ITEMS } from '../../constants'
 import {List} from 'react-bootstrap-icons'
 import CartIcon from '../carticon/CartIcon'
 import SearchBar from '../../sections/search/searchbar/SearchBar'
+import { useNavigate } from 'react-router-dom'
 
 const toggleSideNav = (e) => {
     e.preventDefault()
@@ -17,25 +18,35 @@ const toggleSearchComponent = () => {
 }
 const NavItem = ({name}) => {
     return (
-        <li className='navbar__li cursor-pointer'>
+        <li className='navbar__li cursor-pointer cap fw-bold'>
             {name}
         </li>
     )
 }
 const Navbar = () => {
+
+  const navigate = useNavigate()
   return (
     <nav className='navbar__nav'>
-        <h1 className='fw-regular f-regular'>E-commerce</h1>
+        <div onClick={() => {navigate('/')}}>
+            <svg className='cursor-pointer' width={'3rem'} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" id="nike"><path fill="#263238" fillRule="evenodd" d="m7.998 7.567-2.758.722c-.974.241-1.826.562-2.647.281-1.116-.482-1.096-1.736-.264-3.07-1.471 1.214-4.118 5.096-.538 5.488.456.06 1.268-.1 2.15-.471l4.057-1.665L16 5.58 8.992 7.306l-.994.261z" clipRule="evenodd"></path></svg>
+        </div>
         <ul className='navbar__ul'>
             {NAVBAR_ITEMS.map(item => {
                 return <NavItem key={item} name={item}/>
             })}
         </ul>
         <span className='flex-group align-items-center gap-1'>
-            <CartIcon/>
+            <span className='cap flex-group f-small align-items-center gap-1'>
+                <p>sign up</p>
+                <span className='f-large'>\</span>
+                <p>log in</p>
+            </span>
             <SearchBar onClick={() => toggleSearchComponent()}/>
+            <CartIcon onClick={() => navigate('/cart')}/>
             <div className='navbar__mobile-list'>
-                <List size={30} onClick={(e) => {toggleSideNav(e)}}/>
+                <List size={30} onClick={(e) => {toggleSideNav(e)}}
+                      className='cursor-pointer'/>
                 <div className='navbar__overlay'></div>
                 <ul className='navbar__ul--mobile'>
                     {NAVBAR_ITEMS.map(item => {

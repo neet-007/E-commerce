@@ -11,7 +11,7 @@ from .models import *
 from .serializers import *
 from .utils import *
 # Create your views here.
-@method_decorator(csrf_protect, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class signup_view(APIView):
 
     permission_classes = [permissions.AllowAny]
@@ -39,7 +39,7 @@ class signup_view(APIView):
         return Response({'error':'invalid data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@method_decorator(csrf_protect, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class login_view(APIView):
 
     permission_classes = [permissions.AllowAny]
@@ -127,7 +127,7 @@ class home(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = User_serializer
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class items_view(generics.ListCreateAPIView):
     queryset = Items.objects.all()
     serializer_class = Items_serializers
@@ -136,6 +136,8 @@ class items_view(generics.ListCreateAPIView):
         user = self.request.user
         if user and user is not AnonymousUser:
             data = self.request.data
+            print(data)
+            print(user)
             serialized_data = Items_serializers(data=data)
             if serialized_data.is_valid():
 
@@ -156,12 +158,12 @@ class items_view(generics.ListCreateAPIView):
                 user.save()
 
                 return Response(Items_serializers(item).data, status=status.HTTP_201_CREATED)
-
+            print(serialized_data.errors)
             return Response({'error':'invalid data'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'error':'user not identified'})
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class user_items_view(generics.ListAPIView):
     serializer_class = Items_serializers
 
@@ -174,12 +176,12 @@ class user_items_view(generics.ListAPIView):
 
         return Items.objects.filter(user__id=int(self.kwargs['pk']))
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class single_item_view(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = Items_serializers
 
     def get_queryset(self):
-        return Items.objects.filter(id=self.kwargs['pk'], user=self.request.user)
+        return Items.objects.filter(id=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
         user = self.request.user
@@ -210,7 +212,7 @@ class single_item_view(generics.RetrieveUpdateDestroyAPIView):
 
         return Response({'error':'user is not autheniticed'}, status=status.HTTP_400_BAD_REQUEST)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class create_categories_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     serializer_class = Categories_serializers
     queryset = Categories.objects.all()
@@ -232,7 +234,7 @@ class create_categories_view(generics.ListCreateAPIView, generics.UpdateAPIView,
 
         return Response({'error':'user is not authneticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class single_category(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = Categories_serializers
 
@@ -255,7 +257,7 @@ class single_category(generics.RetrieveUpdateDestroyAPIView):
 
         return Response({'error':'user is not authentaiced'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class add_item_to_categories_view(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CategoriesWithItemsSerializer
 
@@ -299,7 +301,7 @@ class add_item_to_categories_view(generics.RetrieveUpdateDestroyAPIView):
 
         return Response({'error':'user is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class add_rating_view(generics.ListCreateAPIView):
     serializer_class = Ratings_serializers
 
@@ -329,7 +331,7 @@ class add_rating_view(generics.ListCreateAPIView):
 
         return Response({'error':'user is not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class single_rating_view(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = Ratings_serializers
 
@@ -363,7 +365,7 @@ class single_rating_view(generics.RetrieveUpdateDestroyAPIView):
 
         return Response({'error':'user is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class add_comment_to_post(generics.ListCreateAPIView):
     serializer_class = Comments_serializers
 
@@ -393,7 +395,7 @@ class add_comment_to_post(generics.ListCreateAPIView):
 
         return Response({'error':'user is not authenticated'})
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class single_comment_view(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = Comments_serializers
 
@@ -426,7 +428,7 @@ class single_comment_view(generics.RetrieveUpdateDestroyAPIView):
 
         return Response({'error':'user is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class add_up_vote(generics.ListCreateAPIView):
     serializer_class = Up_votes_serializers
 
@@ -453,7 +455,7 @@ class add_up_vote(generics.ListCreateAPIView):
 
         return Response({'error':'user is not authenricated'})
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class single_up_vote(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = Up_votes_serializers
 
@@ -475,7 +477,7 @@ class single_up_vote(generics.RetrieveUpdateDestroyAPIView):
 
         return Response({'error':'user is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class wishlist_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     serializer_class = WishList_serializers
 
@@ -503,7 +505,7 @@ class wishlist_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics
         user = self.request.user
         return manipulate(user, self.request.data, WishList, WishList_serializers, 'delete')
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class Cart_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     serializer_class = Cart_serializers
 
@@ -522,7 +524,7 @@ class Cart_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.Des
         user = self.request.user
         return manipulate2(user, self.request.data, Cart, CartItem, Cart_serializers, 'delete')
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class Order_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     serializer_class = Order_serializers
 
@@ -541,7 +543,7 @@ class Order_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.De
         user = self.request.user
         return manipulate2(user, self.request.data, Order, OrderItem, Order_serializers, 'delete')
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class Cart_to_order_view(generics.ListCreateAPIView):
     serializer_class = Order_serializers
 

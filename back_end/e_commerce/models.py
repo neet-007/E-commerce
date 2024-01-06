@@ -61,7 +61,7 @@ class Items(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now=True)
     in_stock = models.BooleanField(default=True)
-    category = models.ManyToManyField(Categories)
+    category = models.ManyToManyField(Categories, blank=True)
     def __str__(self) -> str:
         return f'user:{self.user.username} item name:{self.name} price:{self.price}'
 

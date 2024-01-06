@@ -21,6 +21,9 @@ body{
 img{
   max-width: 100%;
 }
+a{
+  text-decoration: none;
+}
 .app__main-section{
   padding: 2rem;
   display: flex;
@@ -103,4 +106,22 @@ img{
 }
 .p-1{
   padding: 1rem;
+}
+.p-2{
+  padding: 2rem;
+}
+.overflow-hidden{
+  overflow: hidden;
+}
+.max-height-0{
+  max-height: 0;
+}
+.color-w{
+  color: white;
+}
+.invisible-button{
+  outline: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }

@@ -4,8 +4,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
-    position: sticky;
-    top: 0;
+    
     background-color: white;
 }
 .navbar__ul{
@@ -20,6 +19,7 @@
 .navbar__mobile-list{
 }
 .navbar__ul--mobile{
+    z-index: 10;
     list-style: none;
     position: absolute;
     width: 50%;

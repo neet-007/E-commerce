@@ -18,4 +18,7 @@
     .dropdownmenu__ul{
         max-height: fit-content;
     }
+    .dropdownmenu__border{
+        display: none;
+    }
 }

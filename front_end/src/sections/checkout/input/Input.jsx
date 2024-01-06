@@ -1,10 +1,12 @@
 import React from 'react'
 import './input.css'
-function Input({label, inputType='text'}) {
+function Input({label, value, onChange, required, lableHtml, inputType='text'}) {
   return (
         <span className='flex-group-column justify-content-center'>
+            {lableHtml && <label htmlFor={label}>{label}</label>}
             <input id ={label} type={inputType} className='input__input'
-                   placeholder={label} />
+                   placeholder={label} value={value} onChange={onChange}
+                   required={required}/>
         </span>
   )
 }

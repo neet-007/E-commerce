@@ -21,7 +21,7 @@ const DropdownMenu = ({className, name, list}) => {
                 return <li key={item}
                            className='text-muted f-small cap cursor-pointer'>{item}</li>
             })}
-        <div className='b-bottom-white'/>
+        <div className='b-bottom-white dropdownmenu__border'/>
         </ul>
     </div>
 

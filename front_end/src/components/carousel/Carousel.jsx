@@ -21,13 +21,14 @@ const Carousel = ({itemVartion, id}) => {
   return (
     <section className='carousel__wrapper'>
         <div className='carousel__title-control'>
-            <h3>carousel title</h3>
-            <span className='carousel__control'>
+            <h3 className='f-large fw-bold'>carousel title</h3>
+            {itemVartion !== 'category' && <span className='carousel__control'>
                 <button className='carousel__control-button'
                         onClick={() => {scroll('left', 3, id)}}><ArrowLeft size={20}/></button>
                 <button className='carousel__control-button'
                         onClick={() => {scroll('right', 3, id)}}><ArrowRight size={20}/></button>
             </span>
+            }
         </div>
         <article className='carousel__items x-snap'
                  id={`carousel__items${id}`}>

@@ -12,6 +12,7 @@
     'footer__policy';
     gap: 2.5rem;
     padding: 2rem;
+    height: 100%;
 }
 .footer__email{
     grid-area: footer__email;
@@ -32,7 +33,7 @@
     height: fit-content;
     gap: 1rem;
 }
-.footer__social-media > span{
+.footer__social-media  span{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -47,6 +48,8 @@
 .footer__policy{
     grid-area: footer__policy;
     list-style: none;
+    display: flex;
+    flex-direction: column;
 }
 
 @media only screen and (min-width: 1020px){
@@ -58,5 +61,8 @@
     }
     .footer__social-media{
         justify-self: end;
+    }
+    .footer__policy{
+        flex-direction: row;
     }
 }

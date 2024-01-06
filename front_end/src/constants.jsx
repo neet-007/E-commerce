@@ -1,9 +1,9 @@
 export const NAVBAR_ITEMS = [
-    'Home',
-    'Categorys',
-    'Add items',
-    'Make order',
-    'Manage Profile',
+    'new & featured',
+    'men',
+    'Women',
+    'kids',
+    'sale'
 ]
 
 export const GET_HELP_ITEMS = [
@@ -26,8 +26,21 @@ export const NIKE_APPS = [
     'nike training club'
 ]
 export const POLICY_ITEMS = [
-    'terms of use',
-    'terms and conditions of sale',
-    'company detaials',
-    'privacy & cookie policy'
+    {name:'terms of use',
+     link:'https://www.nike.sa/en/terms_of_use.html'},
+    {name:'terms and conditions of sale',
+     link:'https://www.nike.sa/en/tnc_of_sale.html'},
+    {name:'company detaials',
+     link:'https://www.nike.com/nl/en/help/a/company-details'},
+    {name:'privacy & cookie policy',
+     link:'https://www.nike.sa/en/policy-privacy.html'}
+]
+
+export const DELIVERY_FORM_DATA = [
+    'first name',
+    'last name',
+    'phone number',
+    'email',
+    'address line 1',
+    'address line 2',
 ]
