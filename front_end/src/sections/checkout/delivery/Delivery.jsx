@@ -8,7 +8,7 @@ import { DELIVERY_FORM_DATA } from '../../../constants'
 const Delivery = ({data, updateData, onClick}) => {
 
   return (
-    <form className='flex-group-column gap-1 overflow-hidden' id='delivery-form'>
+    <div className='flex-group-column gap-1 overflow-hidden' id='delivery-form'>
         <p className='fw-bold cap'>add address</p>
         {/*<Input label={'first name'} value={data['first name'].value}
                onChange={e => {updateData({'first name':e.target.value})}}/>*/}
@@ -16,7 +16,8 @@ const Delivery = ({data, updateData, onClick}) => {
           return (<Input key={item} label={item} value={data[item].value}
                          onChange={e => {const a = {...data};
                                          a[item] = e.target.value
-                                        updateData(a)}}/>)
+                                        updateData(a)}}
+                          required={true}/>)
         })}
         <Select options={['a', 'b', 'c']}/>
         <Select options={['a', 'b', 'c']}/>
@@ -24,7 +25,7 @@ const Delivery = ({data, updateData, onClick}) => {
         <Input label={'promo'}/>
 
         <AppButton name={'continue'} onClick={onClick}/>
-    </form>
+    </div>
   )
 }
 

@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './fullitemcard.css'
 import AppButton from '../appbutton/AppButton'
 import BigCheckBox from '../bigcheckbox/BigCheckBox'
 import { useCart } from '../../hooks/useCart'
 const FullItemCard = ({itemId, itemTitle, category, price, description}) => {
   const addToCart = useCart()
+  const [quantity, setQuantity] = useState(0)
   return (
     <article className='fullitemcard__main-article'>
         <div className='fullitemcard__img'>
@@ -37,8 +38,9 @@ const FullItemCard = ({itemId, itemTitle, category, price, description}) => {
                 </span>
             </span>
             <BigCheckBox items={[12, 45, 45, 32, 54]}/>
+            <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)}/>
             <AppButton name={'add to bag'} className={'fullitemcard__button'}
-                       onClick={() => addToCart({cartItems:[itemId], cartQuantity:[1]})}/>
+                       onClick={() => addToCart({cartItems:[itemId], cartQuantity:[quantity], option:'add'})}/>
             <p>{description}</p>
         </div>
     </article>

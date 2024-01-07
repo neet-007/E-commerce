@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import AnonymousUser
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from .models import *
 from .serializers import *
@@ -51,6 +52,7 @@ class login_view(APIView):
             user = authenticate(request, email=self.request.data['email'], password=self.request.data['password'])
 
             if user is not None:
+                print(user)
                 login(request, user)
                 return Response({'success':'login successfull'}, status=status.HTTP_200_OK)
 
@@ -76,7 +78,7 @@ class getCSRFToken(APIView):
     def get(self, request, format=None):
         return Response({'message':'csrf token generated'})
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class send_email_view(APIView):
     res = Response({'success':'email sent'}, status=status.HTTP_201_CREATED)
     def post(self, request, type, format=None):
@@ -90,7 +92,7 @@ class send_email_view(APIView):
         elif type == 'submit-order':
             user = self.request.user
             order = Order.objects.get(user=user, is_active=True)
-            send_email_function(email=user.email, order=order, user=user)
+            send_email_function(email=user.email, order=order, user=user, order_details=self.request.data)
 
             return self.res
 
@@ -510,10 +512,12 @@ class Cart_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.Des
     serializer_class = Cart_serializers
 
     def get_queryset(self):
+        print(self.request.user)
         return Cart.objects.filter(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
-        user = self.request.user
+        user = request.user
+        print(user)
         return manipulate2(user, self.request.data, Cart, CartItem, Cart_serializers, 'post')
 
     def put(self, request, *args, **kwargs):

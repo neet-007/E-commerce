@@ -44,3 +44,17 @@ export const DELIVERY_FORM_DATA = [
     'address line 1',
     'address line 2',
 ]
+
+export const images = [
+    '/src/assets/shirt1.webp',
+    '/src/assets/shirt2.webp',
+    '/src/assets/shirt3.webp',
+    '/src/assets/shirt4.webp',
+    '/src/assets/shoe1.webp',
+    '/src/assets/shoe2.webp',
+    '/src/assets/shoe3.webp',
+    '/src/assets/shoe4.webp',
+    '/src/assets/shoecateogry1.webp',
+    '/src/assets/shoecateogry2.webp',
+    '/src/assets/shoecateogry3.webp',
+]

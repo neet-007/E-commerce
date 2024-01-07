@@ -2,6 +2,8 @@ import React from 'react'
 import './carousel.css'
 import ItemCard from '../itemcard/ItemCard'
 import { ArrowLeft, ArrowRight } from 'react-bootstrap-icons'
+import { images } from '../../constants'
+import { useNavigate } from 'react-router-dom'
 
 const scroll = (dir, childrenCount, id) =>{
     const carousel = document.getElementById(`carousel__items${id}`)
@@ -17,7 +19,14 @@ const scroll = (dir, childrenCount, id) =>{
         })
     }
 }
-const Carousel = ({itemVartion, id}) => {
+const mouseScroll = (e, id) => {
+    let mousedown = false
+    const carousel = document.getElementById(`carousel__items${id}`)
+    carousel.addEventListener('mousedown', () => mousedown = true)
+    if(mousedown) console.log(console.log(e.clientX))
+}
+const Carousel = ({itemVartion, id, data}) => {
+  const navigate = useNavigate()
   return (
     <section className='carousel__wrapper'>
         <div className='carousel__title-control'>
@@ -32,11 +41,12 @@ const Carousel = ({itemVartion, id}) => {
         </div>
         <article className='carousel__items x-snap'
                  id={`carousel__items${id}`}>
-            <ItemCard variation={itemVartion} mainText={'dsad'}/>
-            <ItemCard variation={itemVartion} mainText={'dsad'}/>
-            <ItemCard variation={itemVartion} mainText={'dsad'}/>
-            <ItemCard variation={itemVartion} mainText={'dsad'}/>
-            <ItemCard variation={itemVartion} mainText={'dsad'}/>
+            {data ?
+            data.map((item, i) => {
+                return <ItemCard key={item.id} variation={itemVartion} itemTitle={item.name} itemCategory={item.category.name} price={item.price}
+                                 mainText={item.name} secondoryText={item.description} imgUrl={images[i]} onClick={() => navigate(`/item/${item.id}`)}/>
+            })
+            : ''}
         </article>
     </section>
   )

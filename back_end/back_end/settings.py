@@ -120,26 +120,34 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-SESSION_COOKIE_HTTPONLY = True
+#AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+#SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
-CSRF_COOKIE_NAME = 'csrftoken'
-CSRF_COOKIE_SECURE = True
+#SESSION_COOKIE_AGE = 86400 # sec
+SESSION_COOKIE_NAME = 'DSESSIONID'
 SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_HTTPONLY = False
+
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_HTTPONLY = False
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = (
-  "http://localhost:5173",
-)
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
 ]
+
+"""
+SESSION_COOKIE_HTTPONLY = True
+SESSION_SAVE_EVERY_REQUEST = True
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_SECURE = True
+
+"""
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

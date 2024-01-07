@@ -1,6 +1,6 @@
 import React from 'react'
 import './itemcard.css'
-const ItemCard = ({variation, mainText, secondoryText, onClick, itemTitle='item title', itemCategory='item category', price='350.0'}) => {
+const ItemCard = ({variation, mainText, secondoryText, onClick, imgUrl, itemTitle='item title', itemCategory='item category', price='350.0'}) => {
   let bold;
   let BAW;
   let category;
@@ -10,7 +10,7 @@ const ItemCard = ({variation, mainText, secondoryText, onClick, itemTitle='item 
   return (
     <article className={`itemcard__main-article cursor-pointer`} onClick={onClick}>
         <picture className='itemcard__img'>
-          <img src="/src/assets/iphone.png" alt="item-pic"
+          <img src={imgUrl ? imgUrl:"/src/assets/iphone.png"} alt="item-pic"
               style={BAW}/>
               { (variation === 'category-inline' || variation === 'category-inline-border') &&
                 <span className={`${category} fw-bold`}>

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import CSRF from '../../../components/CSRF'
 import { useLogin } from '../../../querysandmutaions/queriesandmutaions'
 import Loader from '../../../components/loader/Loader'
+
 const LogIn = () => {
     const navigate = useNavigate()
     const [formData, setFormData] = useState({

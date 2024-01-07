@@ -14,12 +14,12 @@ const Home = () => {
     <main className='app__main-section'>
         <MainAdvert/>
         <MainHeroText/>
-        <Carousel itemVartion={'category'}/>
-        <Carousel itemVartion={'category-inline-border'}/>
-        <Carousel itemVartion={'category-inline'}/>
-        <Carousel itemVartion={'full'}/>
-        <Carousel itemVartion={'full'}/>
-        <Carousel itemVartion={'category-BAW'}/>
+        <Carousel itemVartion={'category'} data={data.slice(0,6)} id={1}/>
+        <Carousel itemVartion={'category-inline-border'} data={data.slice(4,10)} id={2}/>
+        <Carousel itemVartion={'category-inline'} data={data.slice(6,12)} id={3}/>
+        <Carousel itemVartion={'full'} data={data.slice(8,14)} id={4}/>
+        <Carousel itemVartion={'full'} data={data.slice(10, 16)} id={5}/>
+        <Carousel itemVartion={'category-BAW'} data={data.slice(12, 18)} id={6}/>
     </main>
   )
 }

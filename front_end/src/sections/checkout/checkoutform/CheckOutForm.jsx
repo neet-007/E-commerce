@@ -7,7 +7,7 @@ import UseMultiStepForm from '../../../hooks/UseMultiStepForm'
 import AppButton from '../../../components/appbutton/AppButton'
 
 const CheckOutForm = ({className}) => {
-  const {steps, currentStepIndex, currentStep, back, next, goToStep, formData, setFormData} = UseMultiStepForm(['delivery-form', 'payment-form', 'review-order-form'])
+  const {steps, currentStepIndex, currentStep, back, next, goToStep, formData, setFormData, handleSubmit} = UseMultiStepForm(['delivery-form', 'payment-form', 'review-order-form'])
   const updateData = (newData) => {
     setFormData(prevData => {
         return {...prevData, ...newData}
@@ -23,17 +23,18 @@ const CheckOutForm = ({className}) => {
 }
 
   return (
-    <div className={`${className}`}>
+    <form className={`${className}`} onSubmit={(e) => handleSubmit(e)}>
         <Header name={'delivery'} verifide={currentStepIndex === 0}/>
         <Delivery data={formData} updateData={updateData}
                   onClick={(e) => onClick(e, 'next')}/>
         {currentStepIndex === 1 && <AppButton name={'back'} onClick={e => onClick(e, 'step', 0)}/>}
         <Header name={'payment'} verifide={currentStepIndex === 1}/>
-        <Payement onClick={(e) => onClick(e, 'next')}/>
+        <Payement data={formData} updateData={updateData}
+                  onClick={(e) => onClick(e, 'next')}/>
         {currentStepIndex === 2 && <AppButton name={'back'} onClick={e => onClick(e, 'step', 1)}/>}
         <Header name={'review-order'} verifide={currentStepIndex === 2}/>
-        <ReviewOrder onClick={(e) => onClick(e, 'next')}/>
-    </div>
+        <ReviewOrder onClick={(e) => onClick(e, 'next')} />
+    </form>
   )
 }
 

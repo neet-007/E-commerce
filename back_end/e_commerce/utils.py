@@ -103,10 +103,11 @@ def send_email_function(email, *args, **kwargs):
         email_obj.send()
         return
 
-    elif kwargs.get('order') and kwargs.get('user'):
+    elif kwargs.get('order') and kwargs.get('user') and kwargs.get('order_details'):
         user = kwargs['user']
         order = kwargs['order']
-        email_obj = EmailMessage(subject='your order is submited', body=f'{user.username} your order of id {order.id} of items{order.order_orderitem.all().values()} was submitd', to=(email, ))
+        order_details = kwargs['order_details']
+        email_obj = EmailMessage(subject='your order is submited', body=f'{user.username} your order of id {order.id} of items{order.order_orderitem.all().values()} and order details {order_details}was submitd', to=(email, ))
         email_obj.send()
         return
 

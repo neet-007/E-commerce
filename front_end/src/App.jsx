@@ -48,6 +48,7 @@ function App() {
             <Route path='/item/:id' element={<FullItem/>}/>
           </Route>
         </Routes>
+        <button onClick={logout}>dsadas</button>
     </main>
   )
 }

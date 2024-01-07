@@ -1,5 +1,5 @@
 import {useQuery, useMutation} from '@tanstack/react-query'
-import {register, login, getAllItems, addItem, addCategory, addItemToCategory, deleteItemFromCategory, editItem, deleteItem, getItemsFromCategory, getSingleItem, addItemToCart} from '../lib/axios/axios'
+import {register, login, getAllItems, addItem, addCategory, addItemToCategory, deleteItemFromCategory, editItem, deleteItem, getItemsFromCategory, getSingleItem, addItemToCart, getCartItems, getOrder, makeOrder, removeItemFromCart, addItemToCart1, orderDetails} from '../lib/axios/axios'
 
 export const useRegister = () => {
     return useMutation({
@@ -69,8 +69,46 @@ export const useDeleteItem = () => {
     })
 }
 
+export const useGetCartItems = () => {
+    return useQuery({
+        queryKey:['get-cart-items'],
+        queryFn: getCartItems
+    })
+}
+
 export const useAddItemToCart = () => {
     return useMutation({
         mutationFn: ({cartItems, cartQuantity}) => addItemToCart({cartItems, cartQuantity})
+    })
+}
+
+export const useAddItemCart1 = () => {
+    return useMutation({
+        mutationFn: ({cartItems, cartQuantity}) => addItemToCart1({cartItems, cartQuantity})
+    })
+}
+
+export const useRemoveItemFromCart = () => {
+    return useMutation({
+        mutationFn: ({cartItems}) => removeItemFromCart({cartItems})
+    })
+}
+
+export const useMakeOrder = () => {
+    return useMutation({
+        mutationFn: makeOrder
+    })
+}
+
+export const useGetOrder = () => {
+    return useQuery({
+        queryKey: ['get-order'],
+        queryFn: getOrder
+    })
+}
+
+export const useOrderDetails = () => {
+    return useMutation({
+        mutationFn: ({orderDetail}) => orderDetails({orderDetail})
     })
 }

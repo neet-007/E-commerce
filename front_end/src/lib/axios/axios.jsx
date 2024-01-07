@@ -1,6 +1,6 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
-
+axios.defaults.withCredentials
 const api = axios.create({
     baseURL:'http://127.0.0.1:8000/api'
 }
@@ -42,6 +42,7 @@ export const login = async ({email, password}) => {
 export const logout = async () => {
     try {
         let res = await api.post('logout', {}, config)
+        console.log(res.data)
         return res.data
     } catch (error) {
         console.log(error)
@@ -49,7 +50,7 @@ export const logout = async () => {
 }
 export const getAllItems = async () => {
     try {
-        let res = await api.get('/items', config)
+        let res = await axios.get('/api/items', config)
         return res.data
     } catch (error) {
         console.log(error)
@@ -120,9 +121,57 @@ export const deleteItem = async ({itemId}) => {
         console.log(error)
     }
 }
+export const getCartItems = async () => {
+    try {
+        let res = await axios.get('/api/cart', config)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
 export const addItemToCart = async ({cartItems, cartQuantity}) => {
     try {
         let res = await axios.post('/api/cart', {items:cartItems, quantity:cartQuantity}, config)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const addItemToCart1 = async ({cartItems, cartQuantity}) => {
+    try {
+        let res = await axios.put('/api/cart', {items:cartItems, quantity:cartQuantity}, config)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const removeItemFromCart = async ({cartItems}) => {
+    try {
+        let res = await axios.delete('/api/cart', {items:cartItems}, config)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const makeOrder = async () => {
+    try {
+        let res = await axios.post('api/cart-to-order', {}, config)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const getOrder = async () => {
+    try {
+        let res = await axios.get('/api/order', config)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const orderDetails= async ({orderDetail}) => {
+    try {
+        let res = await axios.post('api/send-email/submit-order', {order_details:orderDetail}, config)
         return res.data
     } catch (error) {
         console.log(error)

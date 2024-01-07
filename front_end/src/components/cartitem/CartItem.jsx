@@ -1,21 +1,26 @@
 import React from 'react'
 import './cartitem.css'
 import { Trash3 } from 'react-bootstrap-icons'
-const CartItem = () => {
+import { useNavigate } from 'react-router-dom'
+import { useCart } from '../../hooks/useCart'
+const CartItem = ({itemId, itemTitle, quantity, price}) => {
+  const navigate = useNavigate()
+  const removeCartItem = useCart()
   return (
     <article className='cartitem__main-article'>
         <img src="src/assets/iphone.png" alt="item-img"
-             className='cartitem__img'/>
-        <span className='cartitem__price'>SAR 350.0</span>
+             className='cartitem__img cursor-pointer'
+             onClick={() => navigate(`/item/${itemId}`)}/>
+        <span className='cartitem__price'>SAR {price}</span>
         <div className='cartitem__details'>
-          <h3 className='cartitem__title'>
-            Al-Ittihad F.C. 2023/24 Stadium Home
+          <h3 className='cartitem__title cursor-pointer' onClick={() => navigate(`/item/${itemId}`)}>
+            {itemTitle}
           </h3>
           <p>dsad</p>
           <p>sada</p>
           <p>asd</p>
-          <p>asdsad</p>
-          <span className='cartitem__delete'>
+          <p>{quantity}</p>
+          <span className='cartitem__delete cursor-pointer' onClick={() => removeCartItem({cartItems:[itemId], option:'remove'})}>
             <Trash3/>
           </span>
         </div>
