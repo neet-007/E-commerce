@@ -4,7 +4,7 @@
     --sidenav-bar: 20rem;
     position: relative;
     padding: var(--padding);
-    height: fit-content;
+    min-height: 1000px;
 }
 .itemsoverhall__header{
     position: sticky;

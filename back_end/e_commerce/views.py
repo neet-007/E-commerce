@@ -175,13 +175,32 @@ class items_view(generics.ListCreateAPIView):
             serialized_data = Items_serializers(data=data)
             if serialized_data.is_valid():
 
-                item = Items.objects.create(
-                    user=user,
-                    name=data['name'],
-                    description=data['description'],
-                    price=data['price'],
-                    in_stock=True
-                )
+                if data.get('clothing_size'):
+                    item = Items.objects.create(
+                        user=user,
+                        name=data['name'],
+                        description=data['description'],
+                        price=data['price'],
+                        clothing_size = data.get('clothing_size'),
+                        in_stock=True
+                    )
+                elif data.get('shoe_size'):
+                    item = Items.objects.create(
+                        user=user,
+                        name=data['name'],
+                        description=data['description'],
+                        price=data['price'],
+                        shoe_size = data.get('shoe_size'),
+                        in_stock=True
+                    )
+                else:
+                    item = Items.objects.create(
+                        user=user,
+                        name=data['name'],
+                        description=data['description'],
+                        price=data['price'],
+                        in_stock=True
+                    )
 
                 if serialized_data.validated_data.get('category'):
                     categories = Categories.objects.filter(id__in=serialized_data.validated_data.get('category'))
@@ -247,6 +266,29 @@ class single_item_view(generics.RetrieveUpdateDestroyAPIView):
         return Response({'error':'user is not autheniticed'}, status=status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(csrf_exempt, name='dispatch')
+class create_gender_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
+    serializer_class = Gender_serializers
+    queryset = Gender.objects.all()
+
+    def post(self, request):
+        user = User.objects.get(email='admin@email.com')
+
+        if user and user is not AnonymousUser:
+            data = self.request.data
+
+            if Gender_serializers(data=data).is_valid():
+                gender = Gender.objects.create(
+                    name=data['name']
+                )
+
+                return Response(Gender_serializers(gender).data, status=status.HTTP_200_OK)
+
+            return Response({'error':'invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error':'user is not authenticaed'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
 class create_categories_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     serializer_class = Categories_serializers
     queryset = Categories.objects.all()
@@ -267,6 +309,54 @@ class create_categories_view(generics.ListCreateAPIView, generics.UpdateAPIView,
             return Response({'error':'invalid data'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'error':'user is not authneticated'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class create_subcategories_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
+    serializer_class = SubCategories
+    queryset = SubCategories.objects.all()
+
+    def post(self, request):
+        user = User.objects.get(email='admin@email.com')
+
+        if user and user is not AnonymousUser:
+            data = self.request.data
+
+            if Sub_Categories_serializers(data=data).is_valid():
+                category = SubCategories.objects.create(
+                    name=data['name']
+                )
+
+                return Response(Sub_Categories_serializers(category).data, status=status.HTTP_201_CREATED)
+
+            return Response({'error':'invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error':'user is not authneticated'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class single_gender(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = Gender_serializers
+
+    def get_queryset(self):
+        return Gender.objects.filter(id=self.kwargs['pk'])
+
+    def put(self, request, *args, **kwargs):
+        user = User.objects.get(email='admin@email.com')
+        if user and user is not AnonymousUser:
+
+            gender = get_object_or_404(Gender, id=self.kwargs['pk'])
+            serialized_data = Gender_serializers(data=self.request.data)
+            if serialized_data.is_valid():
+
+                serialized_data.update(gender, serialized_data.validated_data)
+
+                return Response(serialized_data.data, status=status.HTTP_200_OK)
+
+            return Response({'error':'invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error':'user is not authenticated'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class single_category(generics.RetrieveUpdateDestroyAPIView):
@@ -291,6 +381,90 @@ class single_category(generics.RetrieveUpdateDestroyAPIView):
 
         return Response({'error':'user is not authentaiced'}, status=status.HTTP_401_UNAUTHORIZED)
 
+
+@method_decorator(csrf_exempt, name='dispatch')
+class single_sub_category(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = Sub_Categories_serializers
+
+    def get_queryset(self):
+        return SubCategories.objects.filter(id=self.kwargs['pk'])
+
+    def put(self, request, *args, **kwargs):
+        user = User.objects.get(email='admin@email.com')
+        if user and user is not AnonymousUser:
+
+            category = get_object_or_404(SubCategories, id=self.kwargs['pk'])
+            serialized_data = Sub_Categories_serializers(data=self.request.data)
+            if serialized_data.is_valid():
+
+                serialized_data.update(category, serialized_data.validated_data)
+
+                return Response(serialized_data.data, status=status.HTTP_201_CREATED)
+
+            return Response({'error':'data is invalid'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error':'user is not authentaiced'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class add_item_to_gender_view(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = GenderWithItemsSerializer
+
+    def get_queryset(self):
+        if self.request.GET.get('cat') and self.request.GET.get('sub-cat'):
+            return Gender.objects.filter(id=self.kwargs['pk'], items_set__categories=self.request.GET.get('cat'), items_set__subcategories=self.request.GET.get('sub-cat'))
+        if self.request.GET.get('cat'):
+            pass
+        if self.request.GET.get('sub-cat'):
+            pass
+        return Gender.objects.filter(id=self.kwargs['pk'])
+
+    def put(self, request, *args, **kwargs):
+        user = User.objects.get(email='admin@email.com')
+        if user and user is not AnonymousUser:
+
+            gender = Gender.objects.get(id=self.kwargs['pk'])
+            if gender:
+
+                items = Items.objects.filter(id__in=self.request.data.get('items'))
+                if items:
+
+                    for item in items:
+                        item.gender.add(gender)
+                        item.save()
+
+                    return Response(Gender_serializers(gender).data, status=status.HTTP_200_OK)
+
+                return Response({'error':'items not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'error':'gender is not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error':'user is not authenitaced'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, *args, **kwargs):
+        user = User.objects.get(email='admin@email.com')
+        if user:
+
+            gender = Gender.objects.get(id=self.kwargs['pk'])
+            if gender:
+
+                items = Items.objects.filter(id__in=self.request.data.get('items'))
+                if items:
+
+                    for item in items:
+                        item.gender.remove(gender)
+                        item.save()
+
+                    return Response({'success':'items removed from gender'}, status=status.HTTP_200_OK)
+
+                return Response({'error':'items not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'error':'gender is not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error':'user is no authenticated'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class add_item_to_categories_view(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CategoriesWithItemsSerializer
@@ -313,7 +487,7 @@ class add_item_to_categories_view(generics.RetrieveUpdateDestroyAPIView):
                         item.category.add(category)
                         item.save()
 
-                    return Response(Categories_serializers(category).data, status=status.HTTP_201_CREATED)
+                    return Response(CategoriesWithItemsSerializer(category).data, status=status.HTTP_201_CREATED)
 
                 return Response({'error':'item not found'})
 
@@ -337,6 +511,55 @@ class add_item_to_categories_view(generics.RetrieveUpdateDestroyAPIView):
             return Response({'error':'items not fonud'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'error':'user is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class add_item_to_sub_categories_view(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = SubCategoriesWithItemsSerializer
+
+    def get_queryset(self):
+        filter = self.request.GET.get('f')
+        if filter:
+            print(filter)
+        return SubCategories.objects.filter(id=self.kwargs['pk'])
+
+    def put(self, request, *args, **kwargs):
+        user = User.objects.get(email='admin@email.com')
+        if user and user is not AnonymousUser:
+            category = SubCategories.objects.get(id=self.kwargs['pk'])
+
+            if category:
+                items = Items.objects.filter(id__in=(self.request.data.get('items')))
+                if items:
+                    for item in items:
+                        item.sub_category.add(category)
+                        item.save()
+
+                    return Response(SubCategoriesWithItemsSerializer(category).data, status=status.HTTP_201_CREATED)
+
+                return Response({'error':'item not found'})
+
+            return Response({'error':'category not found'})
+
+        return Response({'error':'user is not authenticated'})
+
+    def delete(self, request, *args, **kwargs):
+        user = User.objects.get(email='admin@email.com')
+        if user and user is not AnonymousUser:
+
+            category = get_object_or_404(SubCategories, id=self.kwargs['pk'])
+            items = Items.objects.filter(id__in=(self.request.data).get('items'))
+            if items:
+                for item in items:
+                    item.sub_category.remove(category)
+                    item.save()
+
+                return Response({'success':'items removed from category'}, status=status.HTTP_200_OK)
+
+            return Response({'error':'items not fonud'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error':'user is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class add_rating_view(generics.ListCreateAPIView):

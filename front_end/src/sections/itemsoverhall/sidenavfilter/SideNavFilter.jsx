@@ -4,7 +4,7 @@ import CheckBoxFilter from './checkboxfilter/CheckBoxFilter'
 import BigCheckBox from '../../../components/bigcheckbox/BigCheckBox'
 import { X } from 'react-bootstrap-icons'
 import AppButton from '../../../components/appbutton/AppButton'
-const SideNavFilter = ({className, data=[]}) => {
+const SideNavFilter = ({className, data={}}) => {
   const [filterQuery, setFilterQuery] = useState('')
 
   const menuClose = () => {
@@ -18,20 +18,20 @@ const SideNavFilter = ({className, data=[]}) => {
             <span className='sidenavfilter__x-span' onClick={menuClose}><X size={30}/></span>
         </span>
         <li>
-            <CheckBoxFilter data={data} setFilterQuery={setFilterQuery}/>
+            <CheckBoxFilter title={'category'} data={data.categories} setFilterQuery={setFilterQuery}/>
         </li>
         <li>
-            <CheckBoxFilter data={data} setFilterQuery={setFilterQuery}/>
+            <CheckBoxFilter title={'sub-category'} data={data.sub_categories} setFilterQuery={setFilterQuery}/>
         </li>
         <li>
             <BigCheckBox items={['dsa', 'dsa', 'sad', 'sd']}/>
         </li>
         <li>
-            <label htmlFor="pricerange">do later</label>
+            <label htmlFor="pricerange">do later{data.max_price}{data.min_price}</label>
             <input type="range" name='price-range' id='price-range'/>
         </li>
         <li>
-            <CheckBoxFilter data={data} setFilterQuery={setFilterQuery}/>
+            <CheckBoxFilter title={'category'} data={['sda', 'dsad', 'dsadad']} setFilterQuery={setFilterQuery}/>
         </li>
 
         <span className='flex-group sidenavfilter__buttons'>

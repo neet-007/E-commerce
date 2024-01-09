@@ -1,5 +1,5 @@
 import {useQuery, useMutation} from '@tanstack/react-query'
-import {register, login, getAllItems, addItem, addCategory, addItemToCategory, deleteItemFromCategory, editItem, deleteItem, getItemsFromCategory, getSingleItem, addItemToCart, getCartItems, getOrder, makeOrder, removeItemFromCart, addItemToCart1, orderDetails, getUser, addItemToOrder, getHomeItems, serachAllItems, searchSomeItems} from '../lib/axios/axios'
+import {register, login, getAllItems, addItem, addCategory, addItemToCategory, deleteItemFromCategory, editItem, deleteItem, getItemsFromCategory, getSingleItem, addItemToCart, getCartItems, getOrder, makeOrder, removeItemFromCart, addItemToCart1, orderDetails, getUser, addItemToOrder, getHomeItems, serachAllItems, searchSomeItems, getItemsFromGender} from '../lib/axios/axios'
 
 export const useRegister = () => {
     return useMutation({
@@ -61,6 +61,13 @@ export const useAddItem = () => {
 export const useAddCategory = () => {
     return useMutation({
         mutationFn: ({name}) => addCategory({name})
+    })
+}
+
+export const useGetItemsFromGender = ({genderId, category, subCategory}) => {
+    return useQuery({
+        queryKey: ['get-items-from-gender', genderId, category, subCategory],
+        queryFn: () => getItemsFromGender({genderId, category, subCategory})
     })
 }
 

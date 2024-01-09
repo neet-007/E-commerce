@@ -48,20 +48,40 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self) -> str:
         return f'user:{self.username} cash:{self.cash}'
 
+
+class Gender(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return f'gender:{self.name}'
+
+
 class Categories(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self) -> str:
         return f'category:{self.name}'
 
+
+class SubCategories(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return f'category:{self.name}'
+
+
 class Items(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_items')
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    shoe_size = models.IntegerField(blank=True, default=0)
+    clothing_size = models.CharField(max_length=255 ,blank=True)
     created_at = models.DateTimeField(auto_now=True)
     in_stock = models.BooleanField(default=True)
+    gender = models.ManyToManyField(Gender, blank=True)
     category = models.ManyToManyField(Categories, blank=True)
+    sub_category = models.ManyToManyField(SubCategories, blank=True)
     def __str__(self) -> str:
         return f'user:{self.user.username} item name:{self.name} price:{self.price}'
 

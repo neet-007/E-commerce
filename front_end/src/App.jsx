@@ -51,7 +51,7 @@ function App() {
             <Route path='/filter' element={<SideNavFilter data={[{'id':'1'}, {'id':'12'}, {'id':'13'}, {'id':'14'}, {'id':'15'}]}/>}/>
             <Route path='/cart' element={<CartSection/>}/>
             <Route path='/checkout' element={<Checkout/>}/>
-            <Route path='/category/:id' element={<ItemsOverhall/>}/>
+            <Route path='/collection/:gender' element={<ItemsOverhall/>}/>
             <Route path='/item/:id' element={<FullItem/>}/>
             <Route path='/search' element={<SearchSection/>} />
           </Route>

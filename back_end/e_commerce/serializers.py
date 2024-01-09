@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, Max, Min
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from .models import *
@@ -8,6 +8,11 @@ class User_serializer(ModelSerializer):
         model = User
         fields = ['email', 'username', 'bio', 'items_count', 'cash', 'is_verified', 'is_staff']
 
+class Gender_serializers(ModelSerializer):
+    class Meta:
+        model = Gender
+        fields = '__all__'
+
 
 class Categories_serializers(ModelSerializer):
     class Meta:
@@ -15,13 +20,74 @@ class Categories_serializers(ModelSerializer):
         fields = '__all__'
 
 
+class Sub_Categories_serializers(ModelSerializer):
+    class Meta:
+        model = SubCategories
+        fields = '__all__'
+
+
 class Items_serializers(ModelSerializer):
     user = User_serializer(read_only=True)
     in_stock = serializers.BooleanField(read_only=True)
+    gender = Gender_serializers(read_only=True)
     category = Categories_serializers(read_only=True)
+    sub_category = Sub_Categories_serializers(read_only=True)
     class Meta:
         model = Items
         fields = '__all__'
+
+
+class GenderWithItemsSerializer(serializers.ModelSerializer):
+    #items = serializers.SerializerMethodField(method_name='get_items')
+    #categories = serializers.SerializerMethodField(method_name='get_categories')
+    #sub_categories = serializers.SerializerMethodField(method_name='get_sub_categories')
+    #colours = serializers.SerializerMethodField(method_name='get_colours')
+    #min_max_price = serializers.SerializerMethodField(method_name='get_min_max_price')
+    details = serializers.SerializerMethodField(method_name='get_details')
+    class Meta:
+        model = Gender
+        fields = ['id', 'name', 'details']
+
+    """def get_items(self, obj):
+        items = obj.items_set.all()
+        response = Items_serializers(items, many=True).data
+        return response
+
+    def get_categories(self, obj):
+        distinct_item_ids = Items.objects.filter(gender=obj).values_list('id', flat=True).distinct()
+        categories = Categories.objects.filter(
+            items__id__in=distinct_item_ids
+        ).values_list('name', flat=True).distinct()
+        return categories
+
+    def get_sub_categories(self, obj):
+        #distinct_item_ids = Items.objects.filter(gender=obj).values_list('id', flat=True).distinct()
+        #sub_categories = SubCategories.objects.filter(items__id__in=distinct_item_ids).values_list('name', flat=True).distinct()
+        qs = obj.items_set.all()
+        sc = qs.values_list('category', flat=True).distinct()
+        return sc
+
+    def get_colours(self, obj):
+        pass
+
+    def get_min_max_price(self, obj):
+        qs = obj.items_set.all()
+        max_price = qs.aggregate(Max('price'))['price__max']
+        min_price = qs.aggregate(Min('price'))['price__min']
+        return {'max_price':max_price, 'min_price':min_price}"""
+
+    def get_details(self, obj):
+        qs = obj.items_set.all()
+        items = Items_serializers(qs, many=True).data
+        shoe_size = qs.values_list('shoe_size', flat=True).distinct()
+        clothing_size = qs.values_list('clothing_size', flat=True).distinct()
+        max_price = qs.aggregate(Max('price'))['price__max']
+        min_price = qs.aggregate(Min('price'))['price__min']
+        c_ids = qs.values_list('category', flat=True).distinct()
+        sc_ids = qs.values_list('sub_category', flat=True).distinct()
+        categories = Categories.objects.filter(id__in=c_ids).values_list('name', flat=True).distinct()
+        sub_categories = SubCategories.objects.filter(id__in=sc_ids).values_list('name', flat=True).distinct()
+        return {'items':items, 'shoe_size':shoe_size, "clothing_size":clothing_size, 'max_price':max_price, "min_price":min_price, "categories":categories, "sub_categories":sub_categories}
 
 class CategoriesWithItemsSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField(method_name='get_items')
@@ -34,6 +100,20 @@ class CategoriesWithItemsSerializer(serializers.ModelSerializer):
         items = obj.items_set.all()
         response = Items_serializers(items, many=True).data
         return response
+
+
+class SubCategoriesWithItemsSerializer(serializers.ModelSerializer):
+    items = serializers.SerializerMethodField(method_name='get_items')
+
+    class Meta:
+        model = SubCategories
+        fields = ['id', 'name', 'items']
+
+    def get_items(self, obj):
+        items = obj.items_set.all()
+        response = Items_serializers(items, many=True).data
+        return response
+
 
 class Ratings_serializers(ModelSerializer):
     user = User_serializer(read_only=True)

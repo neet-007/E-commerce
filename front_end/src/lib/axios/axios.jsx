@@ -104,6 +104,18 @@ export const addCategory = async ({name}) => {
         console.log(error)
     }
 }
+export const getItemsFromGender = async ({genderId, category, subCategory}) => {
+    try {
+        let url = `/api/add-item-to-gender/${genderId}`
+        if (category && subCategory) {url += `?cat=${category}&sub-cat=${subCategory}`}
+        else if (category){url += `?cat=${category}`}
+        else if (subCategory){url += `?sub-cat=${subCategory}`}
+        let res = await axios.get(url)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
 export const getItemsFromCategory = async ({categoryId, filter}) => {
     try {
         let res = await axios.get(`/api/add-item-to-category/${categoryId}?f=${filter}`)
