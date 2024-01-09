@@ -90,10 +90,12 @@ class items_id_quantity(serializers.Serializer):
         quantity = attrs['quantity']
 
         if items and quantity and len(items) == len(quantity):
-            for item in items:
-                if not int(item):
+            for i in range(len(items)):
+                if not int(items[i]):
                     raise serializers.ValidationError('items must be integer ids')
 
+                if not int(quantity[i]) or quantity[i] == 0:
+                    raise serializers.ValidationError('quantity is 0 or not integer')
                 if Items.objects.filter(id__in=items).exists:
                      return attrs
 
@@ -146,3 +148,28 @@ class Order_serializers(ModelSerializer):
 
     def order_item_count(self, product:Order):
         return product.order_orderitem.all().count()
+
+class UserComplateSerializers(ModelSerializer):
+    order = serializers.SerializerMethodField(method_name='get_order')
+    cart = serializers.SerializerMethodField(method_name='get_cart')
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'is_verified', 'cash', 'is_staff', 'order', 'cart']
+
+    def get_order(self, obj):
+        order = obj.user_order.all()
+        serializered_order = Order_serializers(order, many=True).data
+        return serializered_order
+
+    def get_cart(self, obj):
+        cart = obj.user_cart.all()
+        serializered_cart = Cart_serializers(cart, many=True).data
+        return serializered_cart
+
+
+class HomePageSerializers(serializers.Serializer):
+    sub_categoies = Categories_serializers(many=True)
+    trending_items = Items_serializers(many=True)
+    main_categories = Categories_serializers(many=True)
+    shoe_categories = Items_serializers(many=True)
+    sport_categories = Categories_serializers(many=True)

@@ -80,6 +80,9 @@ a{
 .align-items-center{
   align-items: center;
 }
+.align-items-baseline{
+  align-items: baseline;
+}
 .justify-content-center{
   justify-content: center;
 }
@@ -103,6 +106,12 @@ a{
 }
 .m-t-2{
   margin-top: 1rem;
+}
+.m-b-1{
+  margin-bottom: 0.5rem;
+}
+.m-b-2{
+  margin-bottom: 1rem;
 }
 .p-1{
   padding: 1rem;

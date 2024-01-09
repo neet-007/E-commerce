@@ -5,6 +5,9 @@ import AppButton from '../../appbutton/AppButton'
 import SummeryItems from './summeryitems/SummeryItems'
 import { useNavigate } from 'react-router-dom'
 import { useMakeOrder } from '../../../querysandmutaions/queriesandmutaions'
+import { useOrder } from '../../../hooks/useOrder'
+import Loader from '../../loader/Loader'
+
 
 const toggleSummery = () => {
     const summery = document.getElementById('summery__main-article-1')
@@ -13,15 +16,21 @@ const toggleSummery = () => {
 
 const Summery = ({className, checkOut, subtotal, data}) => {
   const navigate = useNavigate()
-  const {mutateAsync:makeOrder , isPending, isError ,error} = useMakeOrder()
+  //const {mutateAsync:makeOrder , isPending, isError ,error} = useMakeOrder()
+  const {userOrderOptions, isPending, isError, error} = useOrder('add')
 
   const handleClick = () => {
-    makeOrder().then(res => {
-        console.log(res)
-        navigate('/checkout')
-    })
+    {
+        userOrderOptions()
+    }
   }
+  const standartDelivery = 100
 
+  if (isPending) return <Loader/>
+  if (isError){
+    console.log(error)
+    return <h1>ERROR</h1>
+  }
   return (
     <article className={`summery__main-article ${className}`}>
         <span className='flex-group-between align-items-center'>
@@ -33,7 +42,7 @@ const Summery = ({className, checkOut, subtotal, data}) => {
                 <ChevronDown size={20} onClick={toggleSummery}/>
             </span>
         </span>
-        <div className='summery__main-article-1' id='summery__main-article-1'>
+        <div className='summery__main-article-1 cap' id='summery__main-article-1'>
             <div className='flex-group-between'>
                 <p>subtotal</p>
                 <p>SAR {subtotal}</p>
@@ -41,12 +50,12 @@ const Summery = ({className, checkOut, subtotal, data}) => {
             <div className="b-bottom"></div>
             <div className='flex-group-between'>
                 <p>standart delivery</p>
-                <p>SAR 750</p>
+                <p>SAR {standartDelivery}</p>
             </div>
             <div className="b-bottom"></div>
             <div className='flex-group-between'>
                 <p>total</p>
-                <p>SAR 750</p>
+                <p>SAR {subtotal + standartDelivery}</p>
             </div>
             <div className="b-bottom"></div>
             <SummeryItems data={data}/>

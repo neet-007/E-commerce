@@ -4,15 +4,13 @@ import CartItem from '../cartitem/CartItem'
 import Summery from './summery/Summery'
 import { useGetCartItems } from '../../querysandmutaions/queriesandmutaions'
 import Loader from '../loader/Loader'
+import { images } from '../../constants'
+import { useUserContext } from '../../context/Context'
 
 const Cart = () => {
-  const {data, isLoading, isError, error} = useGetCartItems()
+  const {user, isLoading} = useUserContext()
   if (isLoading) return <Loader/>
-  if (isError){
-    console.log(error)
-    return <h1>ERROR</h1>
-  }
-  console.log(data)
+
   return (
     <section className='cart__main-section'>
         <div className="cart__offer">
@@ -21,20 +19,24 @@ const Cart = () => {
         <div className="cart__bag">
             <p className='f-large fw-bold'>Bag</p>
             <span className='cart__bag-total-price'>
-                <span className='text-muted'>{data[0].count}</span>
+                <span className='text-muted'>{user.cart.length === 0 ? 0 :
+                                            user.cart[0].count}</span>
                 <p className='text-muted'>items</p>
                 <span>|</span>
-                <p>SAR {data[0].price}</p>
+                <p>SAR {user.cart.length === 0 ? 0 :
+                        user.cart[0].price}</p>
             </span>
             <div className='cart__cartitems-container'>
-                {data[0].cart_items.map(item => {
-                    return <CartItem key={item.item.id} itemId={item.item.id} itemTitle={item.item.name} quantity={item.quantity} price={item.price}/>
+                {user.cart.length === 0 ? '':
+                user.cart[0].cart_items.map((item, i) => {
+                    return <CartItem key={item.item.id} itemId={item.item.id} itemTitle={item.item.name} quantity={item.quantity} price={item.price}
+                                     imgUrl={images[i]} category={item.item.category.name}/>
                 })}
             </div>
         </div>
         <div className='cart__bag-border'></div>
         <article className='cart__summery'>
-            <Summery subtotal={data[0].price} data={data[0].cart_items}/>
+            <Summery subtotal={user.cart[0].price} data={user.cart[0].cart_items}/>
         </article>
     </section>
   )

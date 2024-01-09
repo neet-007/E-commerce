@@ -3,12 +3,12 @@ import './cartitem.css'
 import { Trash3 } from 'react-bootstrap-icons'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../../hooks/useCart'
-const CartItem = ({itemId, itemTitle, quantity, price}) => {
+const CartItem = ({itemId, itemTitle, quantity, price, imgUrl, category}) => {
   const navigate = useNavigate()
-  const removeCartItem = useCart()
+  const {cartOptions, isPending, isError, error} = useCart('remove')
   return (
     <article className='cartitem__main-article'>
-        <img src="src/assets/iphone.png" alt="item-img"
+        <img src={imgUrl ? imgUrl:"src/assets/iphone.png"} alt="item-img"
              className='cartitem__img cursor-pointer'
              onClick={() => navigate(`/item/${itemId}`)}/>
         <span className='cartitem__price'>SAR {price}</span>
@@ -16,7 +16,7 @@ const CartItem = ({itemId, itemTitle, quantity, price}) => {
           <h3 className='cartitem__title cursor-pointer' onClick={() => navigate(`/item/${itemId}`)}>
             {itemTitle}
           </h3>
-          <p>dsad</p>
+          <p>{category ? category : 'category'}</p>
           <p>sada</p>
           <p>asd</p>
           <p>{quantity}</p>

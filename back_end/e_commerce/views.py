@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login, logout
@@ -7,7 +7,9 @@ from django.contrib.auth.models import AnonymousUser
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 from django.db import transaction
+from django.db.models import Q
 from .models import *
 from .serializers import *
 from .utils import *
@@ -83,21 +85,21 @@ class send_email_view(APIView):
     res = Response({'success':'email sent'}, status=status.HTTP_201_CREATED)
     def post(self, request, type, format=None):
         if type == 'verify':
-            user = self.request.user
+            user = User.objects.get(email='admin@email.com')
             token = Verification.objects.create(user=user)
             send_email_function(email=user.email, token_id=token.token, user_id=user.id)
 
             return self.res
 
         elif type == 'submit-order':
-            user = self.request.user
+            user = User.objects.get(email='admin@email.com')
             order = Order.objects.get(user=user, is_active=True)
             send_email_function(email=user.email, order=order, user=user, order_details=self.request.data)
 
             return self.res
 
         elif type == 'order-delivered':
-            user = self.request.user
+            user = User.objects.get(email='admin@email.com')
             order = Order.objects.get(user=user)
             order.is_active = False
             order.save()
@@ -108,7 +110,7 @@ class send_email_view(APIView):
 
         return Response({'error':'invalid type'}, status.HTTP_400_BAD_REQUEST)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class verification(APIView):
     def post(self, request, format=None):
         token = self.request.data['token']
@@ -125,17 +127,47 @@ class verification(APIView):
         return Response({'error':'invalid credintails'})
 
 
-class home(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = User_serializer
+@method_decorator(csrf_exempt, name='dispatch')
+class get_user(generics.ListAPIView):
+    serializer_class = UserComplateSerializers
+    def get_queryset(self):
+        return User.objects.filter(email='admin@email.com')
+
+
+class home(APIView):
+    def get(self, request):
+        sub_categories = Categories.objects.all()[:6]
+        trending_items = Items.objects.all()[:6]
+        main_categories = Categories.objects.all()[6:12]
+        shoe_categories = Items.objects.all()[6:12]
+        sport_categories = Categories.objects.all()[12:18]
+
+        serializeed_items = HomePageSerializers({
+            "sub_categoies":sub_categories,
+            "trending_items":trending_items,
+            "main_categories":main_categories,
+            "shoe_categories":shoe_categories,
+            "sport_categories":sport_categories,
+        })
+        return Response(serializeed_items.data, status=status.HTTP_200_OK)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class items_view(generics.ListCreateAPIView):
-    queryset = Items.objects.all()
+
     serializer_class = Items_serializers
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'category__name']
+    def get_queryset(self):
+        qp = self.request.GET.get('searchbar')
+        if qp:
+            filter_c = Q(name__icontains=qp) | Q(category__name__icontains=qp)
+            print('count')
+            return Items.objects.filter(filter_c)[:5]
+        return Items.objects.all()
 
     def post(self, request):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
             data = self.request.data
             print(data)
@@ -171,8 +203,8 @@ class user_items_view(generics.ListAPIView):
 
     def get_queryset(self):
         if self.kwargs['pk'] == 'me':
-            if self.request.user:
-                return Items.objects.filter(user=self.request.user)
+            if User.objects.get(email='admin@email.com'):
+                return Items.objects.filter(user=User.objects.get(email='admin@email.com'))
 
             return Items.objects.none()
 
@@ -186,7 +218,7 @@ class single_item_view(generics.RetrieveUpdateDestroyAPIView):
         return Items.objects.filter(id=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
 
             item = get_object_or_404(Items, id=self.kwargs['pk'], user=user)
@@ -201,7 +233,7 @@ class single_item_view(generics.RetrieveUpdateDestroyAPIView):
         return Response({'error':'user is not authentaidec'}, status=status.HTTP_401_UNAUTHORIZED)
 
     def delete(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
 
             item = get_object_or_404(Items, id=self.kwargs['pk'], user=user)
@@ -220,7 +252,7 @@ class create_categories_view(generics.ListCreateAPIView, generics.UpdateAPIView,
     queryset = Categories.objects.all()
 
     def post(self, request):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
 
         if user and user is not AnonymousUser:
             data = self.request.data
@@ -244,7 +276,7 @@ class single_category(generics.RetrieveUpdateDestroyAPIView):
         return Categories.objects.filter(id=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
 
             category = get_object_or_404(Categories, id=self.kwargs['pk'])
@@ -264,10 +296,13 @@ class add_item_to_categories_view(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CategoriesWithItemsSerializer
 
     def get_queryset(self):
+        filter = self.request.GET.get('f')
+        if filter:
+            print(filter)
         return Categories.objects.filter(id=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
             category = Categories.objects.get(id=self.kwargs['pk'])
 
@@ -287,7 +322,7 @@ class add_item_to_categories_view(generics.RetrieveUpdateDestroyAPIView):
         return Response({'error':'user is not authenticated'})
 
     def delete(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
 
             category = get_object_or_404(Categories, id=self.kwargs['pk'])
@@ -311,7 +346,7 @@ class add_rating_view(generics.ListCreateAPIView):
         return Ratings.objects.filter(item__id=self.kwargs['pk'])
 
     def post(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
 
             item = Items.objects.get(id=self.kwargs['pk'])
@@ -341,7 +376,7 @@ class single_rating_view(generics.RetrieveUpdateDestroyAPIView):
         return Ratings.objects.filter(id=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
 
             rating = get_object_or_404(Ratings, user=user, id=self.kwargs['pk'])
@@ -357,7 +392,7 @@ class single_rating_view(generics.RetrieveUpdateDestroyAPIView):
         return Response({'error':'user is not authenticad'}, status=status.HTTP_401_UNAUTHORIZED)
 
     def delete(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
 
             rating = get_object_or_404(Ratings, id=self.kwargs['pk'], user=user)
@@ -375,7 +410,7 @@ class add_comment_to_post(generics.ListCreateAPIView):
         return Comments.objects.filter(item__id=self.kwargs['pk'])
 
     def post(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
 
         if user and user is not AnonymousUser:
             item = Items.objects.get(id=self.kwargs['pk'])
@@ -405,7 +440,7 @@ class single_comment_view(generics.RetrieveUpdateDestroyAPIView):
         return Comments.objects.filter(id=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
 
             comment = get_object_or_404(Comments, id=self.kwargs['pk'], user=user)
@@ -420,7 +455,7 @@ class single_comment_view(generics.RetrieveUpdateDestroyAPIView):
         return Response({'error':'user is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
     def delete(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
 
             comment = get_object_or_404(Comments, id=self.kwargs['pk'], user=user)
@@ -438,7 +473,7 @@ class add_up_vote(generics.ListCreateAPIView):
         return Up_votes.objects.filter(comment_id=self.kwargs['pk'])
 
     def post(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
 
         if user and user is not AnonymousUser:
             comment = Comments.objects.get(id=self.kwargs['pk'])
@@ -465,7 +500,7 @@ class single_up_vote(generics.RetrieveUpdateDestroyAPIView):
         return Up_votes.objects.filter(id=self.kwargs['pk'])
 
     def delete(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser:
 
             up_vote = get_object_or_404(Up_votes, id=self.kwargs['pk'], user=user)
@@ -484,10 +519,10 @@ class wishlist_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics
     serializer_class = WishList_serializers
 
     def get_queryset(self):
-        return WishList.objects.filter(user=self.request.user)
+        return WishList.objects.filter(user=User.objects.get(email='admin@email.com'))
 
     def post(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
 
         if user and user is not AnonymousUser and not WishList.objects.filter(user=user).exists():
             data = self.request.data
@@ -500,11 +535,11 @@ class wishlist_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics
         return Response({'error':'user is not authenticated'})
 
     def put(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         return manipulate(user, self.request.data, WishList, WishList_serializers, 'put')
 
     def delete(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         return manipulate(user, self.request.data, WishList, WishList_serializers, 'delete')
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -512,20 +547,20 @@ class Cart_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.Des
     serializer_class = Cart_serializers
 
     def get_queryset(self):
-        print(self.request.user)
-        return Cart.objects.filter(user=self.request.user)
+        print(User.objects.get(email='admin@email.com'))
+        return Cart.objects.filter(user=User.objects.get(email='admin@email.com'))
 
     def post(self, request, *args, **kwargs):
-        user = request.user
+        user = User.objects.get(email='admin@email.com')
         print(user)
         return manipulate2(user, self.request.data, Cart, CartItem, Cart_serializers, 'post')
 
     def put(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         return manipulate2(user, self.request.data, Cart, CartItem, Cart_serializers, 'put')
 
     def delete(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         return manipulate2(user, self.request.data, Cart, CartItem, Cart_serializers, 'delete')
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -533,18 +568,18 @@ class Order_view(generics.ListCreateAPIView, generics.UpdateAPIView, generics.De
     serializer_class = Order_serializers
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        return Order.objects.filter(user=User.objects.get(email='admin@email.com'))
 
     def post(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         return manipulate2(user, self.request.data, Order, OrderItem, Order_serializers, 'post')
 
     def put(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         return manipulate2(user, self.request.data, Order, OrderItem, Order_serializers, 'put')
 
     def delete(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         return manipulate2(user, self.request.data, Order, OrderItem, Order_serializers, 'delete')
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -552,10 +587,10 @@ class Cart_to_order_view(generics.ListCreateAPIView):
     serializer_class = Order_serializers
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        return Order.objects.filter(user=User.objects.get(email='admin@email.com'))
 
     def post(self, request, *args, **kwargs):
-        user = self.request.user
+        user = User.objects.get(email='admin@email.com')
         if user and user is not AnonymousUser and not Order.objects.filter(user=user).exists():
 
             cart = Cart.objects.get(user=user)

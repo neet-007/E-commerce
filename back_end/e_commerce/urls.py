@@ -8,6 +8,7 @@ urlpatterns = [
     path('csrf', views.getCSRFToken.as_view(), name='csrf'),
     path('send-email/<str:type>', views.send_email_view.as_view(), name='send-email'),
     path('verification', views.verification.as_view(), name='verification'),
+    path('get-user', views.get_user.as_view(), name='get-user'),
     path('items', views.items_view.as_view(), name='items'),
     path('user-items/<str:pk>', views.user_items_view.as_view(), name='user-items'),
     path('create-categories', views.create_categories_view.as_view(), name='general-categories'),

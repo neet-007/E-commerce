@@ -80,8 +80,18 @@ def manipulate2(user, data, object, object_item, serializer, command):
                     for i in range(len(items)):
                         item = Items.objects.get(id=items[i])
                         if (object.__name__).lower() == 'order':
+                            if object_item.objects.filter(order=instance, item=item).exists():
+                                objectItem = object_item.objects.get(order=instance, item=item)
+                                objectItem.quantity += int(quantity[i])
+                                objectItem.save()
+                                break
                             items_list.append(object_item(order=instance, item=item, quantity=quantity[i]))
                         elif (object.__name__).lower() == 'cart':
+                            if object_item.objects.filter(cart=instance, item=item).exists():
+                                objectItem = object_item.objects.get(cart=instance, item=item)
+                                objectItem.quantity += int(quantity[i])
+                                objectItem.save()
+                                break
                             items_list.append(object_item(cart=instance, item=item, quantity=quantity[i]))
 
                     with transaction.atomic():

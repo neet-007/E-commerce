@@ -24,9 +24,15 @@ import AdminHome from './sections/user/admin/adminhome/AdminHome'
 import Option from './sections/user/admin/adminhome/adminoptions/option/Option'
 import { logout } from './lib/axios/axios'
 import FullItem from './sections/fullitem/FullItem'
+import { useUserContext } from './context/Context'
+import SearchSection from './sections/search/searchsection/SearchSection'
+import SideNavFilter from './sections/itemsoverhall/sidenavfilter/SideNavFilter'
+
 
 
 function App() {
+  const {user} = useUserContext()
+  console.log(user)
   return (
     <main>
         {/*<Navbar/>
@@ -42,10 +48,12 @@ function App() {
           </Route>
           <Route element={<MainLayout/>}>
             <Route path='' element={<Home/>}/>
+            <Route path='/filter' element={<SideNavFilter data={[{'id':'1'}, {'id':'12'}, {'id':'13'}, {'id':'14'}, {'id':'15'}]}/>}/>
             <Route path='/cart' element={<CartSection/>}/>
             <Route path='/checkout' element={<Checkout/>}/>
             <Route path='/category/:id' element={<ItemsOverhall/>}/>
             <Route path='/item/:id' element={<FullItem/>}/>
+            <Route path='/search' element={<SearchSection/>} />
           </Route>
         </Routes>
         <button onClick={logout}>dsadas</button>

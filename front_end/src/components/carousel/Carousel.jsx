@@ -25,12 +25,12 @@ const mouseScroll = (e, id) => {
     carousel.addEventListener('mousedown', () => mousedown = true)
     if(mousedown) console.log(console.log(e.clientX))
 }
-const Carousel = ({itemVartion, id, data}) => {
+const Carousel = ({carouselTitle='carousel title', itemVartion, id, data, category}) => {
   const navigate = useNavigate()
   return (
     <section className='carousel__wrapper'>
         <div className='carousel__title-control'>
-            <h3 className='f-large fw-bold'>carousel title</h3>
+            <h3 className='f-large fw-bold cap'>{carouselTitle}</h3>
             {itemVartion !== 'category' && <span className='carousel__control'>
                 <button className='carousel__control-button'
                         onClick={() => {scroll('left', 3, id)}}><ArrowLeft size={20}/></button>
@@ -41,10 +41,14 @@ const Carousel = ({itemVartion, id, data}) => {
         </div>
         <article className='carousel__items x-snap'
                  id={`carousel__items${id}`}>
-            {data ?
+            {data && !category ?
             data.map((item, i) => {
                 return <ItemCard key={item.id} variation={itemVartion} itemTitle={item.name} itemCategory={item.category.name} price={item.price}
                                  mainText={item.name} secondoryText={item.description} imgUrl={images[i]} onClick={() => navigate(`/item/${item.id}`)}/>
+            })
+            : data && category ?
+            data.map((item, i) => {
+                return <ItemCard key={item.id} mainText={item.name} variation={itemVartion} imgUrl={images[i]}/>
             })
             : ''}
         </article>

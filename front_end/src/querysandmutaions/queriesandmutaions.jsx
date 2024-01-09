@@ -1,5 +1,5 @@
 import {useQuery, useMutation} from '@tanstack/react-query'
-import {register, login, getAllItems, addItem, addCategory, addItemToCategory, deleteItemFromCategory, editItem, deleteItem, getItemsFromCategory, getSingleItem, addItemToCart, getCartItems, getOrder, makeOrder, removeItemFromCart, addItemToCart1, orderDetails} from '../lib/axios/axios'
+import {register, login, getAllItems, addItem, addCategory, addItemToCategory, deleteItemFromCategory, editItem, deleteItem, getItemsFromCategory, getSingleItem, addItemToCart, getCartItems, getOrder, makeOrder, removeItemFromCart, addItemToCart1, orderDetails, getUser, addItemToOrder, getHomeItems, serachAllItems, searchSomeItems} from '../lib/axios/axios'
 
 export const useRegister = () => {
     return useMutation({
@@ -17,6 +17,31 @@ export const useGetAllItems = () => {
     return useQuery({
         queryKey: ['all-items'],
         queryFn: getAllItems
+    })
+}
+
+export const useSearchAllItems = (searchValue) => {
+    return useQuery({
+        queryKey: ['search-all-items', searchValue],
+        queryFn: () => serachAllItems(searchValue),
+        keepPreviousData: true,
+        staleTime: 1000
+    })
+}
+
+export const useSearchSomeItems = (searchValue) => {
+    return useQuery({
+        queryKey: ['search-some-items', searchValue],
+        queryFn: () => searchSomeItems(searchValue),
+        keepPreviousData: true,
+        staleTime: 1000
+    })
+}
+
+export const useGetHomeItems = () => {
+    return useQuery({
+        queryKey: ['home-items'],
+        queryFn: getHomeItems
     })
 }
 
@@ -39,10 +64,10 @@ export const useAddCategory = () => {
     })
 }
 
-export const useGetItemsFromCategory = (categoryId) => {
+export const useGetItemsFromCategory = ({categoryId, filter}) => {
     return useQuery({
-        queryKey: ['get-items-from-category', categoryId],
-        queryFn: () => getItemsFromCategory(categoryId)
+        queryKey: ['get-items-from-category', categoryId, filter],
+        queryFn: () => getItemsFromCategory({categoryId, filter})
     })
 }
 export const useAddItemToCategory = () => {
@@ -107,8 +132,21 @@ export const useGetOrder = () => {
     })
 }
 
+export const useAddItemToOrder = () => {
+    return useMutation({
+        mutationFn: ({orderItems, orderQuantity}) => addItemToOrder({orderItems, orderQuantity})
+    })
+}
+
 export const useOrderDetails = () => {
     return useMutation({
         mutationFn: ({orderDetail}) => orderDetails({orderDetail})
+    })
+}
+
+export const useGetUser = () => {
+    return useQuery({
+        queryKey: ['get-user'],
+        queryFn: getUser
     })
 }

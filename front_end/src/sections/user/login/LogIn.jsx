@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import CSRF from '../../../components/CSRF'
 import { useLogin } from '../../../querysandmutaions/queriesandmutaions'
 import Loader from '../../../components/loader/Loader'
+import { useUserContext } from '../../../context/Context'
 
 const LogIn = () => {
     const navigate = useNavigate()
@@ -12,8 +13,11 @@ const LogIn = () => {
       email:'',
       password:'',
     })
+    const {isAuthenticated} = useUserContext()
     const {email, password} = formData
     const {mutateAsync:login , isPending, isError} = useLogin()
+
+    if (isAuthenticated) return navigate('/')
     const onchange = (e) => {
       setFormData(prevData => {
          return {...prevData, [e.target.name]:e.target.value}

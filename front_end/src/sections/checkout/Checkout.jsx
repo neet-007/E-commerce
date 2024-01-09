@@ -4,19 +4,17 @@ import Summery from '../../components/cart/summery/Summery'
 import CheckOutForm from './checkoutform/CheckOutForm'
 import { useGetOrder } from '../../querysandmutaions/queriesandmutaions'
 import Loader from '../../components/loader/Loader'
+import { useUserContext } from '../../context/Context'
 
 const Checkout = () => {
-  const {data, isLoading, isError, error} = useGetOrder()
+  const {data, isError, error} = useGetOrder()
+  const {user, isLoading} = useUserContext()
   if (isLoading) return <Loader/>
-  if (isError){
-    console.log(error)
-    return <h1>ERROR</h1>
-  }
-  console.log(data)
+
   return (
     <section className='checkout__main-article'>
         <CheckOutForm className={'checkout__details flex-group-column gap-1'}/>
-        <Summery className={'checkout__summery'} checkOut={true} data={data[0].order_items}/>
+        <Summery className={'checkout__summery'} checkOut={true} data={user.order[0].order_items} subtotal={user.order[0].price}/>
     </section>
   )
 }

@@ -2,8 +2,44 @@
     margin: 0;
     padding: 0;
     list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
 }
 .sidenavfilter__main-ul > li{
     padding: 0;
     margin: 0;
+}
+.sidenavfilter__x-span{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.2rem;
+    background-color: gray;
+    border-radius: 50%;
+}
+.sidenavfilter__title{
+    display: none;
+}
+.sidenavfilter__buttons{
+    display: none;
+}
+@media only screen and (max-width: 1020px){
+    .sidenavfilter__main-ul{
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        height: max-content;
+        background-color: white;
+        z-index: 10;
+    }
+    .sidenavfilter__title{
+        display: flex;
+    }
+    .sidenavfilter__buttons{
+        display: flex;
+    }
 }

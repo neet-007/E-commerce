@@ -56,6 +56,30 @@ export const getAllItems = async () => {
         console.log(error)
     }
 }
+export const serachAllItems = async (searchValue) => {
+    try {
+        let res = await axios.get(`/api/items?search=${searchValue}`)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const searchSomeItems = async (searchValue) => {
+    try {
+        let res = await axios.get(`/api/items?searchbar=${searchValue}`)
+        return res.data
+    } catch(error){
+        console.log(error)
+    }
+}
+export const getHomeItems = async () => {
+    try {
+        let res = await axios.get('/api', config)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
 export const getSingleItem = async (itemId) => {
     try {
         let res = await axios.get(`/api/single-item/${itemId}`, config)
@@ -80,9 +104,9 @@ export const addCategory = async ({name}) => {
         console.log(error)
     }
 }
-export const getItemsFromCategory = async (categoryId) => {
+export const getItemsFromCategory = async ({categoryId, filter}) => {
     try {
-        let res = await axios.get(`/api/add-item-to-category/${categoryId}`)
+        let res = await axios.get(`/api/add-item-to-category/${categoryId}?f=${filter}`)
         return res.data
     } catch (error) {
         console.log(error)
@@ -161,6 +185,14 @@ export const makeOrder = async () => {
         console.log(error)
     }
 }
+export const addItemToOrder = async ({orderItems, orderQuantity}) => {
+    try {
+        let res = await axios.put('/api/order', {items:orderItems, quantity:orderQuantity},config)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
 export const getOrder = async () => {
     try {
         let res = await axios.get('/api/order', config)
@@ -169,9 +201,17 @@ export const getOrder = async () => {
         console.log(error)
     }
 }
-export const orderDetails= async ({orderDetail}) => {
+export const orderDetails = async ({orderDetail}) => {
     try {
         let res = await axios.post('api/send-email/submit-order', {order_details:orderDetail}, config)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const getUser = async () => {
+    try {
+        let res = await axios.get('/api/get-user', config)
         return res.data
     } catch (error) {
         console.log(error)

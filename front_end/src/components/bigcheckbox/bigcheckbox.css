@@ -3,7 +3,12 @@
     gap: 0.5rem;
     grid-template-columns: repeat(3, 1fr);
 }
-.bigcheckbox__layout > span{
+.bigcheckbox__layout input{
+    opacity: 1;
+    position: absolute;
+    cursor: pointer;
+}
+.bigcheckbox__layout label{
     background-color: white;
     border: 0.5px solid rgba(0, 0, 0, 0.5);
     display: flex;
@@ -12,6 +17,9 @@
     padding: 1rem 1rem;
     cursor: pointer;
 }
-.bigcheckbox__layout > span:hover{
+.bigcheckbox__layout input:checked + .bigcheckbox__layout label{
+    border: 2px solid rgba(0, 0, 0, 1);
+}
+.bigcheckbox__layout  label:hover{
     border: 1.5px solid rgba(0, 0, 0, 1);
 }

@@ -1,15 +1,20 @@
 import { useState, useEffect, useContext, createContext } from "react";
+import { getUser } from "../lib/axios/axios";
 
 
 const INITIAL_USER = {
     id:'',
-    email:'',
-    username:''
+    username:'',
+    cash:'',
+    is_verified:'',
+    is_staff:'',
+    order:[],
+    cart:[]
 }
 
 const INITIAL_STATE = {
     user: INITIAL_USER,
-    isLoading: false,
+    isLoading: true,
     isAuthenticated: false,
     setUser: () => {},
     setIsAuthenticated: () => {},
@@ -20,19 +25,23 @@ const INITIAL_STATE = {
 const userContext = createContext(INITIAL_STATE)
 
 
-export const userProvider = ({children}) => {
+export const UserProvider = ({children}) => {
     const [user, setUser] = useState(INITIAL_USER)
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     const checkAuthUser = async () => {
         try {
-            const currnetUser = await getCurrentUser()
-            if (!currnetUser.error){
+            const currnetUser = await getUser()
+            if (!currnetUser.error && currnetUser.length !== 0){
                 setUser({
-                    id:currnetUser.id,
-                    email:currnetUser.email,
-                    username:currnetUser.username
+                    id:currnetUser[0].id,
+                    username:currnetUser[0].username,
+                    is_staff:currnetUser[0].is_staff,
+                    is_verified:currnetUser[0].is_verified,
+                    cash:currnetUser[0].cash,
+                    cart:currnetUser[0].cart,
+                    order:currnetUser[0].order
                 })
 
                 setIsAuthenticated(true)
@@ -66,4 +75,4 @@ export const userProvider = ({children}) => {
     )
 }
 
-export const useUserContetx = () => useContext(userContext)
+export const useUserContext = () => useContext(userContext)

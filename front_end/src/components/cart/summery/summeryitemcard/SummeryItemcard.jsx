@@ -1,11 +1,11 @@
 import React from 'react'
 import './summeryitemcard.css'
 import { useNavigate } from 'react-router-dom'
-const SummeryItemcard = ({itemId, itemTitle, quantity, price}) => {
+const SummeryItemcard = ({itemId, itemTitle, quantity, price, imgUrl}) => {
   const navigate = useNavigate()
   return (
     <article className='summeryitemcard__main-article'>
-        <img src="src/assets/iphone.png" alt="" className='cursor-pointer'
+        <img src={imgUrl ? imgUrl :"src/assets/iphone.png"} alt="" className='cursor-pointer'
         onClick={() => navigate(`/item/${itemId}`)}/>
         <div className='summeryitemcard__details'>
             <p className='cap cursor-pointer' onClick={() => navigate(`/item/${itemId}`)}>

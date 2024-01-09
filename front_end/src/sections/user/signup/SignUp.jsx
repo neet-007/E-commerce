@@ -5,9 +5,11 @@ import AppButton from '../../../components/appbutton/AppButton'
 import { useNavigate } from 'react-router-dom'
 import { useRegister } from '../../../querysandmutaions/queriesandmutaions'
 import Loader from '../../../components/loader/Loader'
+import { useUserContext } from '../../../context/Context'
 
 const SignUp = () => {
   const navigate = useNavigate()
+  const {isAuthenticated} = useUserContext()
   const [formData, setFormData] = useState({
     email:'',
     username:'',
@@ -17,6 +19,8 @@ const SignUp = () => {
   const {email, username, password, re_password} = formData
 
   const {mutateAsync:register , isError, isPending} = useRegister()
+
+  if (isAuthenticated) return navigate('/')
   const onchange = (e) => {
     setFormData(prevData => {
        return {...prevData, [e.target.name]:e.target.value}

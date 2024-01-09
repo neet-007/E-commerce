@@ -23,7 +23,7 @@ const NavItem = ({name}) => {
         </li>
     )
 }
-const Navbar = () => {
+const Navbar = ({isAuthenticated, cartCount}) => {
 
   const navigate = useNavigate()
   return (
@@ -37,13 +37,15 @@ const Navbar = () => {
             })}
         </ul>
         <span className='flex-group align-items-center gap-1'>
+            {!isAuthenticated &&
             <span className='cap flex-group f-small align-items-center gap-1'>
-                <p>sign up</p>
+                <button className='invisible-button cap' onClick={() => navigate('/signup')}>signup</button>
                 <span className='f-large'>\</span>
-                <p>log in</p>
+                <button className='invisible-button cap' onClick={() => navigate('/login')}>login</button>
             </span>
+            }
             <SearchBar onClick={() => toggleSearchComponent()}/>
-            <CartIcon onClick={() => navigate('/cart')}/>
+            <CartIcon onClick={() => navigate('/cart')} cartCount={cartCount}/>
             <div className='navbar__mobile-list'>
                 <List size={30} onClick={(e) => {toggleSideNav(e)}}
                       className='cursor-pointer'/>

@@ -3,9 +3,16 @@ import './fullitemcard.css'
 import AppButton from '../appbutton/AppButton'
 import BigCheckBox from '../bigcheckbox/BigCheckBox'
 import { useCart } from '../../hooks/useCart'
+import Loader from '../loader/Loader'
 const FullItemCard = ({itemId, itemTitle, category, price, description}) => {
-  const addToCart = useCart()
+  const {cartOptions, isPending, isError, error} = useCart('add')
   const [quantity, setQuantity] = useState(0)
+
+  if (isPending) return <Loader/>
+  if (isError){
+    console.log(error)
+    return <h1>ERROR</h1>
+  }
   return (
     <article className='fullitemcard__main-article'>
         <div className='fullitemcard__img'>
@@ -40,7 +47,7 @@ const FullItemCard = ({itemId, itemTitle, category, price, description}) => {
             <BigCheckBox items={[12, 45, 45, 32, 54]}/>
             <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)}/>
             <AppButton name={'add to bag'} className={'fullitemcard__button'}
-                       onClick={() => addToCart({cartItems:[itemId], cartQuantity:[quantity], option:'add'})}/>
+                       onClick={() => cartOptions({cartItems:[itemId], cartQuantity:[quantity], option:'add'})}/>
             <p>{description}</p>
         </div>
     </article>
