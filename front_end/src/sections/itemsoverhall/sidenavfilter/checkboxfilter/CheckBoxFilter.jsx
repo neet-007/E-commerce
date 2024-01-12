@@ -1,16 +1,16 @@
 import React from 'react'
 import './checkboxfilter.css'
-const CheckBoxFilter = ({data=[], setFilterQuery, title='title'}) => {
+const CheckBoxFilter = ({data=[], setSearchParams, title='title'}) => {
   const handleChange = () => {
     const form = document.getElementById('checkboxfilter__form')
     const inputOptions = form.querySelectorAll('input')
-    let filterQuery = ''
+    let searchParams = ''
     for (let i=0; i < inputOptions.length; i++){
       if (inputOptions[i].checked){
-        filterQuery += `${inputOptions[i].value}&`
+        searchParams += `${inputOptions[i].value}&`
       }
     }
-    setFilterQuery(filterQuery)
+    setSearchParams(prev => ({...prev, title:searchParams}))
   }
   return (
     <div className='flex-group-column checkboxfilter__form' id='checkboxfilter__form'>

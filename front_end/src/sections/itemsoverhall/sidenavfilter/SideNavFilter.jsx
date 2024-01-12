@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { memo } from 'react'
 import './sidenavfilter.css'
 import CheckBoxFilter from './checkboxfilter/CheckBoxFilter'
 import BigCheckBox from '../../../components/bigcheckbox/BigCheckBox'
 import { X } from 'react-bootstrap-icons'
 import AppButton from '../../../components/appbutton/AppButton'
-const SideNavFilter = ({className, data={}}) => {
-  const [filterQuery, setFilterQuery] = useState('')
+import PriceRangeFilter from './pricerangefilter/PriceRangeFilter'
+const SideNavFilter = ({className, data={}, setSearchParams, setSortQuery, setPrice, setFilterQuery}) => {
 
   const menuClose = () => {
     const menu = document.getElementById('sidenavfilter__main-ul')
@@ -17,21 +17,28 @@ const SideNavFilter = ({className, data={}}) => {
             <p className='cap f-large fw-bold m-b-2'>filter</p>
             <span className='sidenavfilter__x-span' onClick={menuClose}><X size={30}/></span>
         </span>
-        <li>
-            <CheckBoxFilter title={'category'} data={data.categories} setFilterQuery={setFilterQuery}/>
+        <li>{data.categories.length !== 0 &&
+            <CheckBoxFilter title={'category'} data={data.categories} setSearchParams={setSearchParams}/>
+            }
+        </li>
+        <li>{data.sub_categories.length !== 0 &&
+            <CheckBoxFilter title={'subCategory'} data={data.sub_categories} setSearchParams={setSearchParams}/>
+            }
+        </li>
+        <li>{data.shoe_size.length !== 0 &&
+            <BigCheckBox items={data.shoe_size} title={'shoe size'} setFilterQuery={setFilterQuery} existingFilter={data.shoe_size_filter}/>
+            }
+        </li>
+        <li>{data.clothing_size.length !== 0 &&
+            <BigCheckBox items={data.clothing_size} title={'clothing size'} setFilterQuery={setFilterQuery} existingFilter={data.clothing_size_filter}/>
+            }
         </li>
         <li>
-            <CheckBoxFilter title={'sub-category'} data={data.sub_categories} setFilterQuery={setFilterQuery}/>
+            <PriceRangeFilter minPrice={data.min_price} maxPrice={data.max_price} setPrice={setPrice}/>
         </li>
-        <li>
-            <BigCheckBox items={['dsa', 'dsa', 'sad', 'sd']}/>
-        </li>
-        <li>
-            <label htmlFor="pricerange">do later{data.max_price}{data.min_price}</label>
-            <input type="range" name='price-range' id='price-range'/>
-        </li>
-        <li>
-            <CheckBoxFilter title={'category'} data={['sda', 'dsad', 'dsadad']} setFilterQuery={setFilterQuery}/>
+        <li>{data.colors.length !== 0 &&
+            <BigCheckBox title={'colors'} items={data.colors} setFilterQuery={setFilterQuery} existingFilter={data.colors_filter}/>
+            }
         </li>
 
         <span className='flex-group sidenavfilter__buttons'>

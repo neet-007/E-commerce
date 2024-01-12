@@ -407,6 +407,69 @@ class single_sub_category(generics.RetrieveUpdateDestroyAPIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+class get_items_final(generics.ListAPIView):
+
+    serializer_class = getItemsFinalSerializer
+
+    def get_queryset(self):
+        if self.request.GET.get('gender'):
+            return Gender.objects.filter(name__iexact=self.request.GET.get('gender'))
+        if self.request.GET.get('cat'):
+            return Categories.objects.filter(name__iexact=self.request.GET.get('cat'))
+        if self.request.GET.get('sub-cat'):
+            return SubCategories.objects.filter(name__iexact=self.request.GET.get('sub-cat'))
+        return Gender.objects.all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        gender_param = self.request.GET.get('gender')
+        category_param = self.request.GET.get('cat')
+        sub_category_param = self.request.GET.get('sub-cat')
+        sort = self.request.GET.get('sort')
+
+        name = 'all'
+        if gender_param:
+            name = gender_param
+        elif category_param:
+            name = category_param
+        elif sub_category_param:
+            name = sub_category_param
+
+        category_filter = None
+        sub_category_filter = None
+
+        if gender_param:
+            if category_param:
+                category_filter = category_param
+            if sub_category_param:
+                sub_category_filter = sub_category_param
+        elif category_param:
+            sub_category_filter = sub_category_param
+
+        if sort == 'new':
+            sort_filter = '-created_at'
+        elif sort == 'old':
+            sort_filter = 'created_at'
+        elif sort == 'min_price':
+            sort_filter = '-price'
+        elif sort == 'max_price':
+            sort_filter = 'price'
+        else:
+            sort_filter = '-created_at'
+
+        context.update({
+            'page_num':self.request.GET.get('page', 1),
+            'name':name,
+            'cat-filter':category_filter,
+            'sub-cat-filter':sub_category_filter,
+            'sort':sort_filter,
+            'shoe-size':self.request.GET.getlist('shoe-size'),
+            'clothing-size':self.request.GET.getlist('clothing-size'),
+            'colors':self.request.GET.getlist('colors')
+        })
+        return context
+
+@method_decorator(csrf_exempt, name='dispatch')
 class add_item_to_gender_view(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GenderWithItemsSerializer
 
@@ -418,6 +481,13 @@ class add_item_to_gender_view(generics.RetrieveUpdateDestroyAPIView):
         if self.request.GET.get('sub-cat'):
             pass
         return Gender.objects.filter(id=self.kwargs['pk'])
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({
+            'page_num':self.request.GET.get('page', 1)
+        })
+        return context
 
     def put(self, request, *args, **kwargs):
         user = User.objects.get(email='admin@email.com')

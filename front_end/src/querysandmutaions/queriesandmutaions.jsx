@@ -1,5 +1,5 @@
 import {useQuery, useMutation} from '@tanstack/react-query'
-import {register, login, getAllItems, addItem, addCategory, addItemToCategory, deleteItemFromCategory, editItem, deleteItem, getItemsFromCategory, getSingleItem, addItemToCart, getCartItems, getOrder, makeOrder, removeItemFromCart, addItemToCart1, orderDetails, getUser, addItemToOrder, getHomeItems, serachAllItems, searchSomeItems, getItemsFromGender} from '../lib/axios/axios'
+import {register, login, getAllItems, addItem, addCategory, addItemToCategory, deleteItemFromCategory, editItem, deleteItem, getItemsFromCategory, getSingleItem, addItemToCart, getCartItems, getOrder, makeOrder, removeItemFromCart, addItemToCart1, orderDetails, getUser, addItemToOrder, getHomeItems, serachAllItems, searchSomeItems, getItemsFromGender, getItemsFinal} from '../lib/axios/axios'
 
 export const useRegister = () => {
     return useMutation({
@@ -64,10 +64,16 @@ export const useAddCategory = () => {
     })
 }
 
-export const useGetItemsFromGender = ({genderId, category, subCategory}) => {
+export const useGetItemsFinal = ({gender, category, subCategory, page, sort, minPrice, maxPrice, filter}) => {
     return useQuery({
-        queryKey: ['get-items-from-gender', genderId, category, subCategory],
-        queryFn: () => getItemsFromGender({genderId, category, subCategory})
+        queryKey:['get-items-final', gender, category, subCategory, page, sort, minPrice, maxPrice, filter],
+        queryFn: () => getItemsFinal({gender, category, subCategory, page, sort, minPrice, maxPrice, filter})
+    })
+}
+export const useGetItemsFromGender = ({genderId, category, subCategory, page}) => {
+    return useQuery({
+        queryKey: ['get-items-from-gender', genderId, category, subCategory, page],
+        queryFn: () => getItemsFromGender({genderId, category, subCategory, page})
     })
 }
 

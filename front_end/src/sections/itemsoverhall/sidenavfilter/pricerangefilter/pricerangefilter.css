@@ -1,0 +1,38 @@
+.pricerangefilter__input-span{
+    position: relative;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: 35% auto;
+}
+.pricerangefilter__input-span input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    pointer-events: all;
+    width: 24px;
+    height: 24px;
+    background-color: red;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px #C6C6C6;
+    cursor: pointer;
+}
+.pricerangefilter__input-span input[type=range]::-moz-range-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: all;
+    width: 24px;
+    height: 24px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px #C6C6C6;
+    cursor: pointer;
+}
+.pricerangefilter__input-span input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2px;
+    width: 100%;
+    position: absolute;
+    background-color: #C6C6C6;
+    pointer-events: none;
+}

@@ -24,7 +24,7 @@ const Summery = ({className, checkOut, subtotal, data}) => {
         userOrderOptions()
     }
   }
-  const standartDelivery = 100
+  const standartDelivery = subtotal === 0 ? 0 : 100
 
   if (isPending) return <Loader/>
   if (isError){

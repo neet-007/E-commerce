@@ -1,6 +1,7 @@
 .mainlayout__section{
     display: flex;
     flex-direction: column;
+    background-color: white;
 }
 .footer{
     margin-top: auto;

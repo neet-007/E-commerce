@@ -10,7 +10,7 @@ import { useUserContext } from '../../context/Context'
 const Cart = () => {
   const {user, isLoading} = useUserContext()
   if (isLoading) return <Loader/>
-
+  let cartLength = user.cart.length
   return (
     <section className='cart__main-section'>
         <div className="cart__offer">
@@ -19,15 +19,15 @@ const Cart = () => {
         <div className="cart__bag">
             <p className='f-large fw-bold'>Bag</p>
             <span className='cart__bag-total-price'>
-                <span className='text-muted'>{user.cart.length === 0 ? 0 :
+                <span className='text-muted'>{cartLength === 0 ? 0 :
                                             user.cart[0].count}</span>
                 <p className='text-muted'>items</p>
                 <span>|</span>
-                <p>SAR {user.cart.length === 0 ? 0 :
+                <p>SAR {cartLength === 0 ? 0 :
                         user.cart[0].price}</p>
             </span>
             <div className='cart__cartitems-container'>
-                {user.cart.length === 0 ? '':
+                {cartLength === 0 ? '':
                 user.cart[0].cart_items.map((item, i) => {
                     return <CartItem key={item.item.id} itemId={item.item.id} itemTitle={item.item.name} quantity={item.quantity} price={item.price}
                                      imgUrl={images[i]} category={item.item.category.name}/>
@@ -36,7 +36,7 @@ const Cart = () => {
         </div>
         <div className='cart__bag-border'></div>
         <article className='cart__summery'>
-            <Summery subtotal={user.cart[0].price} data={user.cart[0].cart_items}/>
+            <Summery subtotal={cartLength === 0 ? 0 : user.cart[0].price} data={cartLength === 0 ? [] : user.cart[0].cart_items}/>
         </article>
     </section>
   )

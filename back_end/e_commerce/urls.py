@@ -14,6 +14,7 @@ urlpatterns = [
     path('create-gender', views.create_gender_view.as_view(), name='general-categories'),
     path('create-categories', views.create_categories_view.as_view(), name='general-categories'),
     path('create-sub-categories', views.create_subcategories_view.as_view(), name='general-sub-categories'),
+    path('get-items-final', views.get_items_final.as_view(), name='get-items-final'),
     path('add-item-to-gender/<int:pk>', views.add_item_to_gender_view().as_view(), name='add-item-to-gender'),
     path('add-item-to-category/<int:pk>', views.add_item_to_categories_view.as_view(), name='add-item-to-category'),
     path('add-item-to-sub-category/<int:pk>', views.add_item_to_sub_categories_view.as_view(), name='add-item-to-sub-category'),

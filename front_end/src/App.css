@@ -134,3 +134,7 @@ a{
   background: transparent;
   cursor: pointer;
 }
+.list-style{
+  list-style: none;
+  text-decoration: none;
+}

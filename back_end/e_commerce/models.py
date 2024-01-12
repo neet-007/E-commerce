@@ -50,21 +50,21 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Gender(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self) -> str:
         return f'gender:{self.name}'
 
 
 class Categories(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self) -> str:
         return f'category:{self.name}'
 
 
 class SubCategories(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self) -> str:
         return f'category:{self.name}'
@@ -75,6 +75,7 @@ class Items(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    color = models.CharField(max_length=255, blank=True)
     shoe_size = models.IntegerField(blank=True, default=0)
     clothing_size = models.CharField(max_length=255 ,blank=True)
     created_at = models.DateTimeField(auto_now=True)

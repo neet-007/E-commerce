@@ -104,12 +104,21 @@ export const addCategory = async ({name}) => {
         console.log(error)
     }
 }
-export const getItemsFromGender = async ({genderId, category, subCategory}) => {
+export const getItemsFinal = async ({gender, category, subCategory, page, sort, minPrice, maxPrice, filter}) => {
     try {
-        let url = `/api/add-item-to-gender/${genderId}`
-        if (category && subCategory) {url += `?cat=${category}&sub-cat=${subCategory}`}
-        else if (category){url += `?cat=${category}`}
-        else if (subCategory){url += `?sub-cat=${subCategory}`}
+        let res = await axios.get(`/api/get-items-final?page=${page}&${gender ? `gender=${gender}`: ''}${category ? `&cat=${category}` : ''}${subCategory ? `&sub-cat${subCategory}` : ''}&${filter}`)
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const getItemsFromGender = async ({genderId, category, subCategory, page}) => {
+    try {
+        let url = `/api/add-item-to-gender/${genderId}?`
+        if (category && subCategory) {url += `cat=${category}&sub-cat=${subCategory}`}
+        else if (category){url += `cat=${category}`}
+        else if (subCategory){url += `sub-cat=${subCategory}`}
+        if(page) url += `page=${page}`
         let res = await axios.get(url)
         return res.data
     } catch (error) {

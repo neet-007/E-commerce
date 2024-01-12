@@ -1,5 +1,6 @@
 from django.db.models import Sum, Max, Min
 from rest_framework.serializers import ModelSerializer
+from django.core.paginator import Paginator, EmptyPage
 from rest_framework import serializers
 from .models import *
 
@@ -36,6 +37,48 @@ class Items_serializers(ModelSerializer):
         model = Items
         fields = '__all__'
 
+
+class getItemsFinalSerializer(serializers.Serializer):
+    name = serializers.SerializerMethodField(method_name='get_name')
+    details = serializers.SerializerMethodField(method_name='get_details')
+
+    field = ['name', 'details']
+    def get_name(self, obj):
+        return self.context.get('name')
+
+    def get_details(self, obj):
+        context = self.context
+        shoe_size_filter = context.get('shoe-size')
+        clothing_size_filter = context.get('clothing-size')
+        colors_filter = context.get('colors')
+        category_filter = context.get('cat-filter')
+        sub_category_filter = context.get('sub-cat-filter')
+        if category_filter and sub_category_filter:
+            qs = obj.items_set.filter(category__name=category_filter, sub_category__name=sub_category_filter).order_by(context.get('sort'))
+        elif category_filter:
+            qs = obj.items_set.filter(category__name=category_filter).order_by(context.get('sort'))
+        elif sub_category_filter:
+            qs = obj.items_set.filter(sub_category__name=sub_category_filter).order_by(context.get('sort'))
+        else:
+            qs = obj.items_set.all().order_by(context.get('sort'))
+
+        page_num = self.context.get('page_num')
+        paginator = Paginator(qs, 2)
+        try:
+            data = paginator.page(page_num)
+        except EmptyPage:
+            data = Items.objects.none()
+        items = Items_serializers(data, many=True).data
+        shoe_size = qs.values_list('shoe_size', flat=True).distinct()
+        clothing_size = qs.values_list('clothing_size', flat=True).distinct()
+        colors = qs.values_list('color', flat=True).distinct()
+        max_price = qs.aggregate(Max('price'))['price__max']
+        min_price = qs.aggregate(Min('price'))['price__min']
+        c_ids = qs.values_list('category', flat=True).distinct()
+        sc_ids = qs.values_list('sub_category', flat=True).distinct()
+        categories = Categories.objects.filter(id__in=c_ids).values_list('name', flat=True).distinct()
+        sub_categories = SubCategories.objects.filter(id__in=sc_ids).values_list('name', flat=True).distinct()
+        return {'items':items, 'shoe_size':shoe_size, "clothing_size":clothing_size, 'colors':colors, 'max_price':max_price, "min_price":min_price, "categories":categories, "sub_categories":sub_categories, "next_page":paginator.page(page_num).has_next(), "shoe_size_filter":shoe_size_filter, "clothing_size_filter":clothing_size_filter, "colors_filter":colors_filter}
 
 class GenderWithItemsSerializer(serializers.ModelSerializer):
     #items = serializers.SerializerMethodField(method_name='get_items')
@@ -77,17 +120,24 @@ class GenderWithItemsSerializer(serializers.ModelSerializer):
         return {'max_price':max_price, 'min_price':min_price}"""
 
     def get_details(self, obj):
-        qs = obj.items_set.all()
-        items = Items_serializers(qs, many=True).data
+        qs = obj.items_set.all().order_by('-created_at')
+        page_num = self.context.get('page_num')
+        paginator = Paginator(qs, 2)
+        try:
+            data = paginator.page(page_num)
+        except EmptyPage:
+            data = Items.objects.none()
+        items = Items_serializers(data, many=True).data
         shoe_size = qs.values_list('shoe_size', flat=True).distinct()
         clothing_size = qs.values_list('clothing_size', flat=True).distinct()
+        colors = qs.values_list('color', flat=True).distinct()
         max_price = qs.aggregate(Max('price'))['price__max']
         min_price = qs.aggregate(Min('price'))['price__min']
         c_ids = qs.values_list('category', flat=True).distinct()
         sc_ids = qs.values_list('sub_category', flat=True).distinct()
         categories = Categories.objects.filter(id__in=c_ids).values_list('name', flat=True).distinct()
         sub_categories = SubCategories.objects.filter(id__in=sc_ids).values_list('name', flat=True).distinct()
-        return {'items':items, 'shoe_size':shoe_size, "clothing_size":clothing_size, 'max_price':max_price, "min_price":min_price, "categories":categories, "sub_categories":sub_categories}
+        return {'items':items, 'shoe_size':shoe_size, "clothing_size":clothing_size, 'colors':colors, 'max_price':max_price, "min_price":min_price, "categories":categories, "sub_categories":sub_categories}
 
 class CategoriesWithItemsSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField(method_name='get_items')

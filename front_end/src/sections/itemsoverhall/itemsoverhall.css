@@ -37,7 +37,36 @@
     gap: var(--padding);
     padding: var(--padding) var(--padding) 0rem 2rem;
 }
-
+.itemsoverhall__dropdown-span{
+    position: relative;
+    min-width: 135px;
+}
+.itemsoverhall__dropdown-ul{
+    position: absolute;
+    z-index: 10;
+    background-color: white;
+    left: 0;
+    right: 0;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 0.5rem 0 0.5rem;
+    transition: all 300ms ease-in-out;
+}
+.itemsoverhall__dropdown-ul-show{
+    max-height: 500px;
+    padding: 0.5rem;
+}
+.itemsoverhall__dropdown-ul input{
+    opacity: 0;
+    position: absolute;
+    cursor: pointer;
+}
+.itemsoverhall__dropdown-ul label{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    cursor: pointer;
+}
 @media only screen and (max-width:1300px){
     .itemsoverhall__main-section{
         --sidenav-bar: 0;
